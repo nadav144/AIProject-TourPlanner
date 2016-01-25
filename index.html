@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Tistle</title>
+    <title>Title</title>
+    <script src="UIServices.js"></script>
+    <script src="Distance.js"></script>
+    <script src="MapServices.js"></script>
+    <script src="POI.js"></script>
+    <script src="SearchServices.js"></script>
 </head>
 <body>
+    <script type="application/javascript">
+        var start = {lat: 55.93, lng: -3.118};
+        var finish = {lat: 56.1, lng: -3.5};
+        var days = 2;
+        var time = 7 * days;
+        LocalSearchGreedy(start, finish, time);
+    </script>
 
 </body>
 </html>
