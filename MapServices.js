@@ -21,7 +21,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
                 location: location,
                 radius: radius,
                 rankby: google.maps.places.RankBy.PROMINENCE,
-                types: ['cafe', 'museum']
+            types: ['zoo', 'museum', 'aquarium', 'amusement_park', 'art_gallery', 'park', 'establishment']
             }, function (result, status) {
                 switch (status) {
                     case google.maps.places.PlacesServiceStatus.OK:

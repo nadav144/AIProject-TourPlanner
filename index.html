@@ -32,7 +32,7 @@
 <script type="application/javascript">
 
     var map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 55.93, lng: -3.118},
+        center: {lat: 32.0808800, lng: 34.7805700},
         zoom: 15
     });
 
@@ -41,9 +41,9 @@
     InitMapService(service);
 
 
-    var start = {lat: 55.93, lng: -3.118};
-    var finish = {lat: 56.1, lng: -3.5};
-    var days = 9;
+    var start = {lat: 32.0808800, lng: 34.7805700};
+    var finish = {lat: 33.0808800, lng: 34.5805700};
+    var days = 3;
     var time = 7 * days;
     var res = LocalSearchGreedy(start, finish, time, function (result, error) {
         log("==== RESULT =====");
