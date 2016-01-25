@@ -5,61 +5,89 @@
 
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
-var SEARCH_RADIUS = 40;
+var SEARCH_RADIUS = 16000;
+
+var huristic = new ScoreHuristic();
 
 
-function LocalSearchGreedy(start,finish, time){
+function LocalSearchGreedy(start, finish, time, callback) {
     // Generate Start node containing a single route
-    var spoi = new POI("Start",start, [TYPE_START], 0);
-    var fpoi = new POI("Finish",finish, [TYPE_FINISH], 0);
+    var spoi = new POI(0, "Start", start, [TYPE_START], 0);
+    var fpoi = new POI(0, "Finish", finish, [TYPE_FINISH], 0);
     var distance =  getDistance(spoi.location, fpoi.location);
-    log(distance);
-
-    var huristic = new ScoreHuristic();
 
     if (distance.time < time) {
         var node = new Node(time, [spoi, fpoi], [distance]);
-        log(node);
-
-        while (!node.isTerminal()) {
-            // calculate neighbors
-            var neighbors = getNeigbors(node);
-            var maxScore = 0;
-            var maxNode = [];
-            for (var n in neighbors) {
-                var score = getScore(n, huristic);
-                if (score > maxScore) {
-                    maxNode = [n];
-                } else if (score == maxScore) {
-                    maxnode.push(n);
-                }
-
-            }
-            // update thte node to be the a randome from the max
-            node = maxnode[Math.floor(Math.random() * maxnode.length)];
-        }
-
-        return node;
+        next(node, callback);
 
     } else {
-        error("Distance alone is more than trip time.")
+        var errortext = "Distance alone is more than trip time.";
+        error(errortext);
+        callback(null, error);
     }
 
-    return new Node();
 }
 
-function getNeigbors(node) {
+function next(node, callbackOnFinish) {
+
+    if (node.isTerminal()) {
+        callbackOnFinish(node);
+    }
+
+    var neighbors = getNeigbors(node, function (neighbors) {
+        var maxScore = 0;
+        var maxNode = [];
+        for (var i = 0; i < neighbors.length; i++) {
+            var n = neighbors[i];
+            var score = getScore(n, huristic);
+            log("score: " + score);
+            if (score > maxScore) {
+                maxNode = [n];
+            } else if (score == maxScore) {
+                maxNode.push(n);
+            }
+
+        }
+        log(maxNode);
+        if (maxNode.length == 0) {
+            callbackOnFinish(node);
+        } else {
+            // update thte node to be the a randome from the max
+            var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
+            next(nextnode, callbackOnFinish);
+        }
+
+    });
+}
+
+function getNeigbors(node, callback) {
     if (node.isTerminal()) {
         return [];
     }
     // random select a place to add
-    var index = Math.floor(Math.random() * maxnode.length - 1);
-    var pois = getPOIsAroundLocation(node.pois[index].location, SEARCH_RADIUS, []);
-    var neigbors = [];
-    for (var newpoi in pois) {
-        neigbors.push(node.cloneNewPOI(index, newpoi))
-    }
-    return neigbors;
+    var index = Math.floor(Math.random() * (node.pois.length - 1));
+
+    getPOIsAroundLocation(node.pois[index].location, SEARCH_RADIUS, [], function (newpois, status) {
+        var neigbors = [];
+        for (var i = 0; i < newpois.length; i++) {
+            var exists = false;
+            for (var j = 0; j < node.pois.length; j++) {
+                if (newpois[i].placeID == node.pois[j].placeID) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                neigbors.push(node.cloneNewPOI(index, newpois[i]))
+            }
+        }
+
+        //return neigbors;
+        log(neigbors);
+        callback(neigbors);
+    });
+
+
 }
 
 
@@ -69,7 +97,7 @@ function Node(time, pois, distances) {
     this.self = this;
     this.pois = pois;
     this.distances = distances;
-    this.timeRemainingHours = 0.0;
+    this.timeRemainingHours = time;
 
     this.isTerminal = function x() {
         return this.timeRemainingHours <= 0;
@@ -82,13 +110,15 @@ function Node(time, pois, distances) {
     this.cloneNewPOI = function x(index, poi) {
         // is this deep-copy implimented right?
         var newpois = [].concat(this.pois);
+        console.log(poi);
         newpois.splice(index + 1, 0, poi);
         var newDistances = [].concat(this.distances);
         var oldTime = newDistances[index].time;
+        log(newpois);
         newDistances[index] = getDistance(newpois[index].location, newpois[index + 1].location);
         newDistances.splice(index + 1, 0, getDistance(newpois[index + 1].location, newpois[index + 2].location));
 
-        var newtime = this.timeRemainingHours + oldTime - newDistances[index].time - newDistances[index + 1].time;
+        var newtime = this.timeRemainingHours + oldTime - newDistances[index].time - newDistances[index + 1].time - poi.time;
 
         return new Node(newtime, newpois, newDistances);
 
@@ -104,11 +134,12 @@ function getScore(node, heuristic) {
 
 function ScoreHuristic() {
 
-    function calc(Node) {
+    this.calc = function x(node) {
         var score = 0;
-        for (var poi in Node.pois) {
-            score += poi.rating;
+        for (var i = 0; i < node.pois.length; i++) {
+            score += node.pois[i].rating;
         }
+        return score;
     }
 
 }

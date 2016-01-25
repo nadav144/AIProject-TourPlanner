@@ -10,3 +10,18 @@ function error(content) {
     console.error(content);
 
 }
+
+infowindow = new google.maps.InfoWindow();
+
+function createMarker(place, map) {
+    var placeLoc = place.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.location
+    });
+
+    google.maps.event.addListener(marker, 'click', function () {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+    });
+}
