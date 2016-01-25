@@ -7,5 +7,5 @@ function getPOIsAroundLocation (location, radius, preferences) {
 }
 
 function getDistance(start, end){
-
+//pass
 }
