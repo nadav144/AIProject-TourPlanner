@@ -9,19 +9,17 @@ var SEARCH_RADIUS = 40;
 
 
 function LocalSearchGreedy(start,finish, time){
-    log(start);
-    log(finish);
-
     // Generate Start node containing a single route
     var spoi = new POI("Start",start, [TYPE_START], 0);
     var fpoi = new POI("Finish",finish, [TYPE_FINISH], 0);
     var distance =  getDistance(spoi.location, fpoi.location);
+    log(distance);
 
     var huristic = new ScoreHuristic();
 
     if (distance.time < time) {
         var node = new Node(time, [spoi, fpoi], [distance]);
-        log(startNode);
+        log(node);
 
         while (!node.isTerminal()) {
             // calculate neighbors

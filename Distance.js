@@ -4,8 +4,8 @@
 function Distance(start, finish, time, airDistance) {
     this.start = {};
     this.finish = {};
-    this.time = 0.0;
-    this.airDistance = 0.0;
+    this.time = time;
+    this.airDistance = airDistance;
 
     return this;
 }

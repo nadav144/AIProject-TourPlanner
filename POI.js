@@ -4,10 +4,10 @@
 
 function POI(name, location, types, raiting) {
     this.self = this;
-    this.name = "";
-    this.location = {};
-    this.types = [];
-    this.rating = 0;
+    this.name = name;
+    this.location = location;
+    this.types = types;
+    this.rating = raiting;
 
 
     return this;

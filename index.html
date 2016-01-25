@@ -2,28 +2,51 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="UIServices.js"></script>
-    <script src="Distance.js"></script>
-    <script src="MapServices.js"></script>
+
+
     <script src="POI.js"></script>
     <script src="SearchServices.js"></script>
+    <script src="Distance.js"></script>
     <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&libraries=geometry">
-    </script>
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&libraries=geometry,places"></script>
+    <script src="MapServices.js"></script>
+    <script src="UIServices.js"></script>
+
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&signed_in=true&libraries=places" async defer></script>-->
+
+
+
 </head>
 <body>
-    <script type="application/javascript">
+<div id="map"></div>
+<div id="main"></div>
+
+
+<script type="application/javascript">
+
+    console.log("here");
+    console.log(document.getElementById('map'));
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 32.0808800, lng: 34.7805700},
+        zoom: 15
+    });
+
+    var service = new google.maps.places.PlacesService(map);
+
+    InitMapService(service);
+
+
         var start = {lat: 55.93, lng: -3.118};
         var finish = {lat: 56.1, lng: -3.5};
         var days = 2;
         var time = 7 * days;
+    LocalSearchGreedy(start, finish, time);
+</script>
 
 
-        console.log(a);
-        //LocalSearchGreedy(start, finish, time);
-    </script>
 
 </body>
 </html>
