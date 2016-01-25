@@ -3,9 +3,9 @@
  */
 
 function getPOIsAroundLocation (location, radius, preferences) {
-
+    return [new POI()];
 }
 
 function getDistance(start, end){
-//pass
+    return new Distance();
 }
