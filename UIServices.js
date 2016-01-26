@@ -2,8 +2,16 @@
  * Created by OdedA on 25-Jan-16.
  */
 
+var doc;
+var logTextArea;
+function initializeUIServices(document) {
+    doc = document;
+    logTextArea = doc.getElementById("logText");
+}
+
 function log(content){
-    console.log(content);
+    logTextArea.value += content.toString() + "\n";
+    logTextArea.scrollTop = logTextArea.scrollHeight;
 }
 
 function error(content) {
@@ -24,4 +32,8 @@ function createMarker(place, map) {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
+}
+
+function handleInput(data) {
+
 }

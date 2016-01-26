@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        #map {
+            height: 100%;
+        }
+    </style>
+
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <LINK rel="stylesheet" type="text/css" href='style.css'>
+
+    <script src="jquery-2.2.0.min.js"></script>
+    <script src="POI.js"></script>
+    <script src="SearchServices.js"></script>
+    <script src="Distance.js"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&libraries=geometry,places"></script>
+    <script src="MapServices.js"></script>
+    <script src="UIServices.js"></script>
+
+
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&signed_in=true&libraries=places" async defer></script>-->
+
+
+</head>
+<body>
+    <div id = "content">
+        <div id = "map_inputs" style="width: 80%; float: left">
+            <div id="map" style="height: 550px"></div>
+            <div id="inputs" style="background-color: antiquewhite;">
+                <div id="locationField" style="width: 50%; float: left; text-align: center">
+                    Start Address: <input id="startAddress" placeholder="Enter your address"
+                                         onFocus="geolocate()" type="text">
+                    <br/>
+                    End Address: <input id="endAddress" placeholder="Enter your address"
+                                       onFocus="geolocate()" type="text">
+                </div>
+                <div id="timesField" style="width: auto; text-align: center">
+                    Start Time: <input id="startTime" type="datetime-local" >
+                    <br/>
+                    End Time: <input id="endTime" type="datetime-local">
+                </div>
+                <br style="clear:both;"/>
+
+                <div id="sendButtonDiv" style="text-align: center">
+                    <input id="sendButton" type="button" value = "Find Best Route!" onclick="sendDataToHandler();">
+                </div>
+            </div>
+            <div id="dataLog" style="background-color: burlywood;">
+                <textarea id="logText" disabled></textarea>
+            </div>
+        </div>
+
+        <div id="route" style="height: 1000px; width: 20%; float: right; background-color: aquamarine">
+
+        </div>
+        <br style="clear:both;"/>
+    </div>
+
+
+    <script type="application/javascript">
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 32.0808800, lng: 34.7805700},
+            zoom: 15
+        });
+
+        var service = new google.maps.places.PlacesService(map);
+
+        InitMapService(service);
+        initializeUIServices(document);
+
+        var placeSearch, startAddress, endAddress;
+        var componentForm = {
+            street_number: 'short_name',
+            route: 'long_name',
+            locality: 'long_name',
+            administrative_area_level_1: 'short_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+        };
+
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            startAddress = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('startAddress')),
+                    {types: ['geocode']});
+            endAddress = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */(document.getElementById('endAddress')),
+                    {types: ['geocode']});
+        }
+
+        initAutocomplete();
+
+
+        // [START region_geolocation]
+        // Bias the autocomplete object to the user's geographical location,
+        // as supplied by the browser's 'navigator.geolocation' object.
+        function geolocate() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var geolocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    var circle = new google.maps.Circle({
+                        center: geolocation,
+                        radius: position.coords.accuracy
+                    });
+                    startAddress.setBounds(circle.getBounds());
+                });
+            }
+        }
+        // [END region_geolocation]
+
+        function sendDataToHandler() {
+            var startPlace = startAddress.getPlace();
+            var endPlace = endAddress.getPlace();
+            var startDate = new Date(document.getElementById("startTime").value);
+            var endDate = new Date(document.getElementById("endTime").value);
+
+
+            var tourStartLoc = {lat: startPlace.geometry.location.lat(), lng: startPlace.geometry.location.lng()};
+            var tourEndLoc = {lat: endPlace.geometry.location.lat(), lng: endPlace.geometry.location.lng()};
+            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600);
+
+            log("finding best route");
+            var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
+                log("==== RESULT =====");
+                log(result);
+                for (var i = 0; i < result.pois.length; i++) {
+                    createMarker(result.pois[i], map);
+
+                }
+            });
+
+
+            return;
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            for (var i = 0; i < place.address_components.length; i++) {
+                var addressType = place.address_components[i].types[0];
+                if (componentForm[addressType]) {
+                    var val = place.address_components[i][componentForm[addressType]];
+                    document.getElementById(addressType).value = val;
+                }
+            }
+        }
+    </script>
+
+
+</body>
+</html>
