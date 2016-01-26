@@ -14,42 +14,69 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
 
     var flag = false;
 
+    var process = function (result, status, pagination) {
+        querycount++;
+        switch (status) {
+            case google.maps.places.PlacesServiceStatus.OK:
+
+                for (var i = 0; i < result.length; i++) {
+                    var res = result[i];
+                    // TODO: should we check for that?
+                    if ($.inArray("point_of_interest", res.types)) {
+                        pois.push(new POI(res));
+                    }
+                }
+
+                if (pagination.hasNextPage) {
+                    totalCount++;
+                    setTimeout(function x() {
+                        pagination.nextPage();
+                    }, 1000);
+                } else {
+                    if (querycount == totalCount) {
+                        callback(pois);
+                    }
+                }
+                break;
+            case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
+                if (querycount == totalCount) {
+                    callback([], status);
+                }
+                break;
+            default:
+                error("error on query");
+                error(status);
+                callback([], status);
+        }
+    };
+
     setTimeout(function () {
 
 
-        service.nearbySearch({
+        pois = [];
+        querycount = 0;
+        totalCount = 1;
+
+        service.textSearch({
                 location: location,
                 radius: radius,
+                query: "tourist attractions",
+                //query: "Western Wall, Jerusalem",
                 rankby: google.maps.places.RankBy.PROMINENCE,
-            types: ['zoo', 'museum', 'aquarium', 'amusement_park', 'art_gallery', 'park', 'establishment']
-            }, function (result, status) {
-                switch (status) {
-                    case google.maps.places.PlacesServiceStatus.OK:
-                        pois = [];
-                        for (var i = 0; i < result.length; i++) {
-                            var res = result[i];
-                            pois.push(new POI(res.place_id, res.name, {
-                                lat: res.geometry.location.lat(),
-                                lng: res.geometry.location.lng()
-                            }, res.types, res.rating));
-                        }
-
-                        log(pois);
-
-                        callback(pois);
-                        break;
-                    case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
-                        callback([], status);
-                        break;
-                    default:
-                        error("error on query");
-                        error(status);
-                        callback([], status);
-                }
-            }
+                //types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+            }, process
         );
 
-    }, 1000);
+        //service.nearbySearch({
+        //    location: location,
+        //    radius: radius,
+        //
+        //    rankby: google.maps.places.RankBy.PROMINENCE,
+        //    types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+        //    }, process
+        //);
+
+    }, 300);
 
 
 }

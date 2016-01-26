@@ -5,15 +5,15 @@
 
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
-var SEARCH_RADIUS = 16000;
+var SEARCH_RADIUS = 60000;
 
 var huristic = new ScoreHuristic();
 
 
 function LocalSearchGreedy(start, finish, time, callback) {
     // Generate Start node containing a single route
-    var spoi = new POI(0, "Start", start, [TYPE_START], 0);
-    var fpoi = new POI(0, "Finish", finish, [TYPE_FINISH], 0);
+    var spoi = new POI(TYPE_START, start);
+    var fpoi = new POI(TYPE_FINISH, finish);
     var distance =  getDistance(spoi.location, fpoi.location);
 
     if (distance.time < time) {
@@ -40,7 +40,6 @@ function next(node, callbackOnFinish) {
         for (var i = 0; i < neighbors.length; i++) {
             var n = neighbors[i];
             var score = getScore(n, huristic);
-            log("score: " + score);
             if (score > maxScore) {
                 maxNode = [n];
             } else if (score == maxScore) {
@@ -48,7 +47,6 @@ function next(node, callbackOnFinish) {
             }
 
         }
-        log(maxNode);
         if (maxNode.length == 0) {
             callbackOnFinish(node);
         } else {
@@ -82,8 +80,6 @@ function getNeigbors(node, callback) {
             }
         }
 
-        //return neigbors;
-        log(neigbors);
         callback(neigbors);
     });
 
@@ -110,11 +106,9 @@ function Node(time, pois, distances) {
     this.cloneNewPOI = function x(index, poi) {
         // is this deep-copy implimented right?
         var newpois = [].concat(this.pois);
-        console.log(poi);
         newpois.splice(index + 1, 0, poi);
         var newDistances = [].concat(this.distances);
         var oldTime = newDistances[index].time;
-        log(newpois);
         newDistances[index] = getDistance(newpois[index].location, newpois[index + 1].location);
         newDistances.splice(index + 1, 0, getDistance(newpois[index + 1].location, newpois[index + 2].location));
 
@@ -138,6 +132,11 @@ function ScoreHuristic() {
         var score = 0;
         for (var i = 0; i < node.pois.length; i++) {
             score += node.pois[i].rating;
+            if (node.pois[i].photos != null) {
+                score += node.pois[i].photos.length * 0.5;
+            }
+            score += node.pois[i].types.length * 0.7;
+
         }
         return score;
     }

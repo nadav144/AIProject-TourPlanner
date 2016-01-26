@@ -13,9 +13,11 @@
     <title>Title</title>
 
 
+    <script src="jquery-2.2.0.min.js"></script>
     <script src="POI.js"></script>
     <script src="SearchServices.js"></script>
     <script src="Distance.js"></script>
+
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&libraries=geometry,places"></script>
     <script src="MapServices.js"></script>
@@ -33,7 +35,7 @@
 
     var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 32.0808800, lng: 34.7805700},
-        zoom: 15
+        zoom: 10
     });
 
     var service = new google.maps.places.PlacesService(map);
