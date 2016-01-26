@@ -34,14 +34,18 @@ function next(node, callbackOnFinish) {
         callbackOnFinish(node);
     }
 
-    var neighbors = getNeigbors(node, function (neighbors) {
+    var neighbors = getNeigbors(node, function (neighbors, index) {
         var maxScore = 0;
         var maxNode = [];
+        console.log(neighbors);
         for (var i = 0; i < neighbors.length; i++) {
             var n = neighbors[i];
             var score = getScore(n, huristic);
+            console.log("new - score: " + score);
+            console.log("max - " + maxScore);
             if (score > maxScore) {
                 maxNode = [n];
+                maxScore = score;
             } else if (score == maxScore) {
                 maxNode.push(n);
             }
@@ -50,6 +54,12 @@ function next(node, callbackOnFinish) {
         if (maxNode.length == 0) {
             callbackOnFinish(node);
         } else {
+            log("max score:" + maxScore);
+            log("locations");
+            for (var j = 0; j < maxNode.length; j++) {
+                log(maxNode[j].pois[index].name);
+            }
+
             // update thte node to be the a randome from the max
             var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
             next(nextnode, callbackOnFinish);
@@ -76,11 +86,12 @@ function getNeigbors(node, callback) {
                 }
             }
             if (!exists) {
+                log("added option:" + newpois[i].name);
                 neigbors.push(node.cloneNewPOI(index, newpois[i]))
             }
         }
 
-        callback(neigbors);
+        callback(neigbors, index);
     });
 
 

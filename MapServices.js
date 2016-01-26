@@ -55,7 +55,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
 
         pois = [];
         querycount = 0;
-        totalCount = 1;
+        totalCount = 2;
 
         service.textSearch({
                 location: location,
@@ -67,14 +67,14 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
             }, process
         );
 
-        //service.nearbySearch({
-        //    location: location,
-        //    radius: radius,
-        //
-        //    rankby: google.maps.places.RankBy.PROMINENCE,
-        //    types: ['zoo', 'museum', 'aquarium', 'amusement_park']
-        //    }, process
-        //);
+        service.nearbySearch({
+                location: location,
+                radius: radius,
+
+                rankby: google.maps.places.RankBy.PROMINENCE,
+                types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+            }, process
+        );
 
     }, 300);
 
