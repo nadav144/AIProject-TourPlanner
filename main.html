@@ -30,8 +30,8 @@
 <body>
     <div id = "content">
         <div id = "map_inputs" style="width: 80%; float: left">
-            <div id="map" style="height: 550px"></div>
-            <div id="inputs" style="background-color: antiquewhite;">
+            <div id="map" class = "contentDiv" style="height: 550px"></div>
+            <div id="inputs" class = "contentDiv" style="background-color: antiquewhite;">
                 <div id="locationField" style="width: 50%; float: left; text-align: center">
                     Start Address: <input id="startAddress" placeholder="Enter your address"
                                          onFocus="geolocate()" type="text">
@@ -50,13 +50,13 @@
                     <input id="sendButton" type="button" value = "Find Best Route!" onclick="sendDataToHandler();">
                 </div>
             </div>
-            <div id="dataLog" style="background-color: burlywood;">
+            <div id="dataLog" class = "contentDiv" style="background-color: burlywood;">
                 <textarea id="logText" disabled></textarea>
             </div>
         </div>
 
-        <div id="route" style="height: 1000px; width: 20%; float: right; background-color: aquamarine">
-
+        <div id="routeSteps" class = "contentDiv" style="height: 1000px; width: 19%; float: right; background-color: aquamarine;">
+            <!--routes dynamically created here-->
         </div>
         <br style="clear:both;"/>
     </div>
@@ -135,21 +135,20 @@
                 log(result);
                 for (var i = 0; i < result.pois.length; i++) {
                     createMarker(result.pois[i], map);
-
                 }
             });
 
 
             return;
-            // Get each component of the address from the place details
-            // and fill the corresponding field on the form.
-            for (var i = 0; i < place.address_components.length; i++) {
-                var addressType = place.address_components[i].types[0];
-                if (componentForm[addressType]) {
-                    var val = place.address_components[i][componentForm[addressType]];
-                    document.getElementById(addressType).value = val;
-                }
-            }
+//            // Get each component of the address from the place details
+//            // and fill the corresponding field on the form.
+//            for (var i = 0; i < place.address_components.length; i++) {
+//                var addressType = place.address_components[i].types[0];
+//                if (componentForm[addressType]) {
+//                    var val = place.address_components[i][componentForm[addressType]];
+//                    document.getElementById(addressType).value = val;
+//                }
+//            }
         }
     </script>
 

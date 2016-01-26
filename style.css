@@ -1,11 +1,11 @@
 textarea {
-    width: 100%;
+    width: 99%;
     resize: none;
     height: 200px;
 }
-
-.boxsizingBorder {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+.contentDiv {
+    border: 1px solid black;
+}
+.routeStep {
+    border: 1px solid black;
 }

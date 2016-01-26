@@ -4,14 +4,23 @@
 
 var doc;
 var logTextArea;
+var routeArea;
 function initializeUIServices(document) {
     doc = document;
     logTextArea = doc.getElementById("logText");
+    routeArea = doc.getElementById("routeSteps");
 }
 
 function log(content){
-    logTextArea.value += content.toString() + "\n";
+    //if (typeof content === "object") {
+    //    logTextArea.value += JSON.stringify(content) + "\n";
+    //} else {
+    //    logTextArea.value += content + "\n";
+    //}
+    logTextArea.value += content + "\n";
     logTextArea.scrollTop = logTextArea.scrollHeight;
+
+    console.log(content);
 }
 
 function error(content) {
@@ -34,6 +43,13 @@ function createMarker(place, map) {
     });
 }
 
-function handleInput(data) {
-
+var routeStep = 1;
+function addRouteStep(name) {
+    var nextStep = doc.createElement('div');
+    nextStep.id = 'routeStep_' + routeStep.toString();
+    nextStep.border = 1;
+    nextStep.className = 'routeStep';
+    nextStep.innerHTML = routeStep.toString() + ". " + name.toString();
+    routeStep += 1;
+    routeArea.appendChild(nextStep);
 }
