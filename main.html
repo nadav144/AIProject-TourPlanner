@@ -34,15 +34,15 @@
             <div id="inputs" class = "contentDiv" style="background-color: antiquewhite;">
                 <div id="locationField" style="width: 50%; float: left; text-align: center">
                     Start Address: <input id="startAddress" placeholder="Enter your address"
-                                         onFocus="geolocate()" type="text">
+                                         onFocus="geolocate()" type="text" value="Jerusalem, Israel">
                     <br/>
                     End Address: <input id="endAddress" placeholder="Enter your address"
-                                       onFocus="geolocate()" type="text">
+                                       onFocus="geolocate()" type="text" value="Jerusalem, Israel">
                 </div>
                 <div id="timesField" style="width: auto; text-align: center">
-                    Start Time: <input id="startTime" type="datetime-local" >
+                    Start Time: <input id="startTime" type="datetime-local" value = "1970-01-01T08:00">
                     <br/>
-                    End Time: <input id="endTime" type="datetime-local">
+                    End Time: <input id="endTime" type="datetime-local" value = "1970-01-01T17:00">
                 </div>
                 <br style="clear:both;"/>
 
@@ -124,10 +124,36 @@
             var startDate = new Date(document.getElementById("startTime").value);
             var endDate = new Date(document.getElementById("endTime").value);
 
+            startDate.setTime(startDate.getTime() + startDate.getTimezoneOffset()*60*1000);
+            endDate.setTime(endDate.getTime() + endDate.getTimezoneOffset()*60*1000);
+
+            // ------ Normalize tour time to start every day at 8:00 and end at 17:00
+            var startDateNorm = new Date(startDate.toDateString());
+            var endDateNorm = new Date(endDate.toDateString());
+            var tourLength = ((endDateNorm.getTime() - startDateNorm.getTime())) / (1000 * 3600 * 24) * 9;
+            console.log(tourLength);
+            if (tourLength < 0) {
+                log("Your first day of the tour should be before the last day of the tour");
+                return;
+            }
+            if (tourLength === 0) {
+                tourLength = Math.max(Math.min(endDate.getHours(), 17) - Math.max(startDate.getHours(), 8), 0);
+                if (tourLength <= 0) {
+                    log("Tour length is either 0 or less than 0.");
+                    return;
+                }
+            } else {
+                tourLength -= Math.min(17 - Math.max(startDate.getHours(), 8), 0);
+                tourLength += Math.max(Math.min(endDate.getHours(), 17) - 8, 0);
+            }
+
+            console.log(tourLength);
 
             var tourStartLoc = {lat: startPlace.geometry.location.lat(), lng: startPlace.geometry.location.lng()};
             var tourEndLoc = {lat: endPlace.geometry.location.lat(), lng: endPlace.geometry.location.lng()};
-            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600);
+//            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600);
+
+            map.panTo(tourStartLoc);
 
             log("finding best route");
             var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
