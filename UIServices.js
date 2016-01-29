@@ -4,11 +4,11 @@
 
 var doc;
 var logTextArea;
-var routeArea;
+var routeSteps;
 function initializeUIServices(document) {
     doc = document;
     logTextArea = doc.getElementById("logText");
-    routeArea = doc.getElementById("routeSteps");
+    routeSteps = doc.getElementById("routeSteps");
 }
 
 function log(content){
@@ -45,11 +45,10 @@ function createMarker(place, map) {
 
 var routeStep = 1;
 function addRouteStep(name) {
-    var nextStep = doc.createElement('div');
-    nextStep.id = 'routeStep_' + routeStep.toString();
-    nextStep.border = 1;
-    nextStep.className = 'routeStep';
-    nextStep.innerHTML = routeStep.toString() + ". " + name.toString();
+    var nextStepRow = doc.createElement('li');
+    nextStepRow.id = 'routeStep_' + routeStep.toString();
+    nextStepRow.className = 'list-group-item';
+    nextStepRow.innerHTML = routeStep.toString() + ". " + name.toString();
     routeStep += 1;
-    routeArea.appendChild(nextStep);
+    routeSteps.appendChild(nextStepRow);
 }
