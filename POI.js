@@ -8,6 +8,7 @@ function POI(googlePOIObject, location) {
 
         this.placeID = googlePOIObject.place_id;
         this.name = googlePOIObject.name;
+        this.originalLocation = googlePOIObject.geometry.location;
         this.location = {lat: googlePOIObject.geometry.location.lat(), lng: googlePOIObject.geometry.location.lng()};
         this.types = googlePOIObject.types;
         this.rating = googlePOIObject.rating;

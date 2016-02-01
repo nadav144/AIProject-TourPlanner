@@ -29,18 +29,39 @@ function error(content) {
 }
 
 infowindow = new google.maps.InfoWindow();
+// TODO:: CLEAR on new route
+bounds = new google.maps.LatLngBounds();
 
-function createMarker(place, map) {
+var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+
+function createMarker(place, map, index) {
     var placeLoc = place.location;
     var marker = new google.maps.Marker({
         map: map,
+        //place: {location: place.originalLocation, placeId: place.placeID},
+        animation: google.maps.Animation.DROP,
+        //label: labels[labelIndex++ % labels.length],
         position: place.location
     });
 
     google.maps.event.addListener(marker, 'click', function () {
-        infowindow.setContent(place.name);
+        infowindow.setContent(place.name + "<br>" + place.rating);
         infowindow.open(map, this);
     });
+
+    markers.splice(index, 0, marker);
+
+    var labelIndex = 0;
+    markers.forEach(function (x) {
+        x.setLabel(labels[labelIndex % labels.length]);
+        labelIndex = labelIndex + 1;
+    });
+
+
+    bounds.extend(marker.getPosition());
+    map.fitBounds(bounds);
+
 
     return marker;
 }

@@ -55,6 +55,7 @@ function next(node, callbackOnFinish) {
             // update thte node to be the a randome from the max
             var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
             log("Added location:" + nextnode.pois[index + 1].name);
+            markers.push(createMarker(nextnode.pois[index + 1], map, index + 1));
             addRouteStep(nextnode.pois[index + 1].name, index + 1);
             next(nextnode, callbackOnFinish);
         }

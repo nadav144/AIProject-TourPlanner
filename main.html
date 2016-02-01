@@ -186,7 +186,7 @@
                 log(result);
                 calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
                 for (var i = 0; i < result.pois.length; i++) {
-                    markers.push(createMarker(result.pois[i], map));
+//                    markers.push(createMarker(result.pois[i], map));
                 }
                 fitMap();
             });
@@ -222,7 +222,7 @@
 
 
             if (pois.length > 2) {
-                for (var j = 1; j < pois.length - 1; j++) {
+                for (var j = 1; j < Math.min(pois.length - 1, 8); j++) {
                     waypoints.push({location: {lat: pois[j].location.lat, lng: pois[j].location.lng}, stopover: true});
                 }
             }
