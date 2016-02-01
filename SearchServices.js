@@ -68,7 +68,6 @@ function getNeigbors(node, callback) {
     }
     // random select a place to add
     var index = Math.floor(Math.random() * (node.pois.length - 1));
-    log(index);
 
     getPOIsAroundLocation(node.pois[index].location, Math.min(node.timeRemainingHours * 60 * 1000, 6 * 60 * 1000), [], function (newpois, status) {
         var neigbors = [];
@@ -81,7 +80,10 @@ function getNeigbors(node, callback) {
                 }
             }
             if (!exists) {
-                neigbors.push(node.cloneNewPOI(index, newpois[i]))
+                var newnode = node.cloneNewPOI(index, newpois[i]);
+                if (newnode.timeRemainingHours >= 0) {
+                    neigbors.push(newnode);
+                }
             }
         }
 

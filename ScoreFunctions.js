@@ -81,10 +81,6 @@ function simpsonsDiversityScore() {
         keys.forEach(function (x) {
             score += (types[x] * (types[x] - 1)) / (sum * (sum - 1));
         });
-
-        console.log("Diversity" + score);
-
-
         return score;
     }
 }

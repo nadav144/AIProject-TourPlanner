@@ -86,6 +86,8 @@
         var directionsDisplay = new google.maps.DirectionsRenderer;
 
         directionsDisplay.setMap(map);
+        directionsDisplay.setOptions({suppressMarkers: true});
+
 
 
         InitMapService(service);
@@ -182,10 +184,11 @@
             var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
                 log("==== RESULT =====");
                 log(result);
-//                calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
+                calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
                 for (var i = 0; i < result.pois.length; i++) {
                     markers.push(createMarker(result.pois[i], map));
                 }
+                fitMap();
             });
 
 
@@ -201,22 +204,35 @@
 //            }
         }
 
+        function fitMap() {
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < markers.length; i++) {
+                bounds.extend(markers[i].getPosition());
+            }
+
+            map.fitBounds(bounds);
+        }
+
 
         function calculateAndDisplayRoute(directionsService, directionsDisplay, pois) {
 
-//            var waypoints = [];
-//            if (pois.length > 2) {
-//                for (var j = 1; j < 2; j++) {
-//                    waypoints.push({location: new google.maps.LatLng(pois[j].location.lat, pois[j].location.lng), stopover: false});
-//                }
-//            }
+
+            var waypoints = [];
+//            waypoints.push({location: {lat:pois[2].location.lat, lng: pois[2].location.lng}, stopover: true});
+
+
+            if (pois.length > 2) {
+                for (var j = 1; j < pois.length - 1; j++) {
+                    waypoints.push({location: {lat: pois[j].location.lat, lng: pois[j].location.lng}, stopover: true});
+                }
+            }
 
 
             directionsService.route({
                 origin: pois[0].location,
-                destination: pois[1].location,
+                destination: pois[pois.length - 1].location,
                 travelMode: google.maps.TravelMode.DRIVING,
-//                waypoints: waypoints
+                waypoints: waypoints
             }, function (response, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
                     directionsDisplay.setDirections(response);
