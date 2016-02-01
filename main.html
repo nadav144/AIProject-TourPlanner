@@ -10,10 +10,11 @@
 
 
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>SARF - Smart AI Route Finder</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <script src="jquery-2.2.0.min.js"></script>
+    <script src="ScoreFunctions.js"></script>
     <script src="POI.js"></script>
     <script src="SearchServices.js"></script>
     <script src="Distance.js"></script>
@@ -28,27 +29,35 @@
 
 </head>
 <body>
+<div id="inputs1" class="row">
+    <img src="http://www.userlogos.org/files/logos/1air2philou/google-maps-topview.png" height="100px"/>
+</div>
+<div id="inputs1" class="row">
+
+    <div id="inputs" style="background-color: lightblue">
+        <div id="locationField" class="col-sm-6">
+            Start Address: <input id="startAddress" placeholder="Enter your address"
+                                  onFocus="geolocate()" type="text" value="Jerusalem, Israel">
+            <br/>
+            End Address: <input id="endAddress" placeholder="Enter your address"
+                                onFocus="geolocate()" type="text" value="Jerusalem, Israel">
+        </div>
+        <div id="timesField" class="col-sm-6">
+            Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00">
+            <br/>
+            End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00">
+        </div>
+
+        <div id="sendButtonDiv" style="text-align: center">
+            <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();">Find Best Route!
+            </button>
+        </div>
+    </div>
+</div>
     <div id = "content" class="row">
         <div id = "map_inputs" class="col-sm-9" style="padding-right: 0;">
             <div id="map" style="height: 530px"></div>
-            <div id="inputs"  style="background-color: antiquewhite;">
-                <div id="locationField" class="col-sm-6">
-                    Start Address: <input id="startAddress" placeholder="Enter your address"
-                                         onFocus="geolocate()" type="text" value="Jerusalem, Israel">
-                    <br/>
-                    End Address: <input id="endAddress" placeholder="Enter your address"
-                                       onFocus="geolocate()" type="text" value="Jerusalem, Israel">
-                </div>
-                <div id="timesField" class="col-sm-6">
-                    Start Time: <input id="startTime" type="datetime-local" value = "1970-01-01T08:00">
-                    <br/>
-                    End Time: <input id="endTime" type="datetime-local" value = "1970-01-01T17:00">
-                </div>
 
-                <div id="sendButtonDiv" style="text-align: center">
-                    <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();">Find Best Route!</button>
-                </div>
-            </div>
             <div id="dataLog" style="padding: 0; background-color: burlywood;">
                 <textarea id="logText" class="well" style="width: 100%; height: 100px; resize: none; margin-bottom: 0" disabled></textarea>
             </div>
@@ -66,10 +75,16 @@
 
         var map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 32.0808800, lng: 34.7805700},
-            zoom: 15
+            zoom: 10
         });
 
         var service = new google.maps.places.PlacesService(map);
+
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+
+        directionsDisplay.setMap(map);
+
 
         InitMapService(service);
         initializeUIServices(document);
@@ -131,7 +146,7 @@
             var startDateNorm = new Date(startDate.toDateString());
             var endDateNorm = new Date(endDate.toDateString());
             var tourLength = ((endDateNorm.getTime() - startDateNorm.getTime())) / (1000 * 3600 * 24) * 9;
-            console.log(tourLength);
+//            console.log(tourLength);
             if (tourLength < 0) {
                 log("Your first day of the tour should be before the last day of the tour");
                 return;
@@ -147,7 +162,7 @@
                 tourLength += Math.max(Math.min(endDate.getHours(), 17) - 8, 0);
             }
 
-            console.log(tourLength);
+//            console.log(tourLength);
 
             var tourStartLoc = {lat: startPlace.geometry.location.lat(), lng: startPlace.geometry.location.lng()};
             var tourEndLoc = {lat: endPlace.geometry.location.lat(), lng: endPlace.geometry.location.lng()};
@@ -159,6 +174,7 @@
             var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
                 log("==== RESULT =====");
                 log(result);
+//                calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
                 for (var i = 0; i < result.pois.length; i++) {
                     createMarker(result.pois[i], map);
                 }
@@ -175,6 +191,31 @@
 //                    document.getElementById(addressType).value = val;
 //                }
 //            }
+        }
+
+
+        function calculateAndDisplayRoute(directionsService, directionsDisplay, pois) {
+
+//            var waypoints = [];
+//            if (pois.length > 2) {
+//                for (var j = 1; j < 2; j++) {
+//                    waypoints.push({location: new google.maps.LatLng(pois[j].location.lat, pois[j].location.lng), stopover: false});
+//                }
+//            }
+
+
+            directionsService.route({
+                origin: pois[0].location,
+                destination: pois[1].location,
+                travelMode: google.maps.TravelMode.DRIVING,
+//                waypoints: waypoints
+            }, function (response, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
         }
     </script>
 

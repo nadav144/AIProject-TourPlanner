@@ -44,11 +44,17 @@ function createMarker(place, map) {
 }
 
 var routeStep = 1;
-function addRouteStep(name) {
+function addRouteStep(name, index) {
     var nextStepRow = doc.createElement('li');
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
     nextStepRow.innerHTML = routeStep.toString() + ". " + name.toString();
     routeStep += 1;
-    routeSteps.appendChild(nextStepRow);
+    if (routeSteps.children.length == 0) {
+        routeSteps.appendChild(nextStepRow);
+    } else {
+        routeSteps.insertBefore(nextStepRow, routeSteps.children[index - 1]);
+    }
+
+
 }

@@ -11,7 +11,6 @@ function InitMapService(mapService) {
 
 function getPOIsAroundLocation(location, radius, preferences, callback) {
 
-
     var flag = false;
 
     var process = function (result, status, pagination) {
@@ -70,22 +69,16 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
         service.nearbySearch({
                 location: location,
                 radius: radius,
-
                 rankby: google.maps.places.RankBy.PROMINENCE,
                 types: ['zoo', 'museum', 'aquarium', 'amusement_park']
             }, process
         );
 
-    }, 300);
-
-
+    }, 220);
 }
 
 function getDistance(start, finish) {
-    log(start);
-    log(finish);
     var distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(start.lat, start.lng), new google.maps.LatLng(finish.lat, finish.lng));
-    console.log(distanceInMeters);
     // distance --> km. / 60 km per hour
     var time = ((distanceInMeters / 1000) / 60);
     var drivingFactor = 1.3;
