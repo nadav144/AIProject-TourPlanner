@@ -41,6 +41,8 @@ function createMarker(place, map) {
         infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
+
+    return marker;
 }
 
 var routeStep = 1;

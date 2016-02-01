@@ -11,6 +11,7 @@ function ScoreHuristic() {
     scores.push({weight: 0.5, score: new photosScore()});
     scores.push({weight: -0.7, score: new longestDistanceScore()});
     scores.push({weight: -0.2, score: new closeToEnd()});
+    scores.push({weight: 10, score: new simpsonsDiversityScore()});
 
 
     this.calc = function x(node) {
@@ -54,6 +55,36 @@ function typesScore() {
             score += node.pois[i].types.length * 0.7;
 
         }
+        return score;
+    }
+}
+
+//http://www.countrysideinfo.co.uk/simpsons.htm
+function simpsonsDiversityScore() {
+    this.calc = function x(node) {
+        var score = 0;
+        var sum = 0;
+        var types = {};
+        var keys = [];
+        for (var i = 0; i < node.pois.length; i++) {
+            node.pois[i].types.forEach(function (x) {
+                sum++;
+                if (types[x] == null) {
+                    keys.push(x);
+                    types[x] = 1;
+                } else {
+                    types[x]++;
+                }
+            });
+        }
+
+        keys.forEach(function (x) {
+            score += (types[x] * (types[x] - 1)) / (sum * (sum - 1));
+        });
+
+        console.log("Diversity" + score);
+
+
         return score;
     }
 }

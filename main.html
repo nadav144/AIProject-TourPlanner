@@ -78,6 +78,8 @@
             zoom: 10
         });
 
+        markers = [];
+
         var service = new google.maps.places.PlacesService(map);
 
         var directionsService = new google.maps.DirectionsService;
@@ -134,6 +136,11 @@
         // [END region_geolocation]
 
         function sendDataToHandler() {
+
+            markers.forEach(function (m) {
+                m.setMap(null);
+            });
+
             var startPlace = startAddress.getPlace();
             var endPlace = endAddress.getPlace();
             var startDate = new Date(document.getElementById("startTime").value);
@@ -170,13 +177,14 @@
 
             map.panTo(tourStartLoc);
 
+
             log("finding best route");
             var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
                 log("==== RESULT =====");
                 log(result);
 //                calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
                 for (var i = 0; i < result.pois.length; i++) {
-                    createMarker(result.pois[i], map);
+                    markers.push(createMarker(result.pois[i], map));
                 }
             });
 

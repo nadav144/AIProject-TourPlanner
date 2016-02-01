@@ -17,7 +17,6 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
         querycount++;
         switch (status) {
             case google.maps.places.PlacesServiceStatus.OK:
-
                 for (var i = 0; i < result.length; i++) {
                     var res = result[i];
                     // TODO: should we check for that?
@@ -30,7 +29,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
                     totalCount++;
                     setTimeout(function x() {
                         pagination.nextPage();
-                    }, 1000);
+                    }, 200);
                 } else {
                     if (querycount == totalCount) {
                         callback(pois);

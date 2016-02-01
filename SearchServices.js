@@ -91,14 +91,12 @@ function getNeigbors(node, callback) {
 
 }
 
-
-
-
 function Node(time, pois, distances) {
     this.self = this;
     this.pois = pois;
     this.distances = distances;
     this.timeRemainingHours = time;
+
 
     this.isTerminal = function x() {
         return this.timeRemainingHours <= 0;
