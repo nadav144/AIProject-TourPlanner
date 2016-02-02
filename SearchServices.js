@@ -59,7 +59,7 @@ function next(node, callbackOnFinish) {
             //huristic.calc(node, true);
 
             markers.push(createMarker(nextnode.pois[index + 1], map, index + 1));
-            addRouteStep(nextnode.pois[index + 1].name, index + 1);
+            addRouteStep(nextnode.pois[index + 1], index + 1);
             next(nextnode, callbackOnFinish);
         }
 

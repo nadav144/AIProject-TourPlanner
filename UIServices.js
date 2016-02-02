@@ -70,11 +70,19 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(name, index) {
+function addRouteStep(poi, index) {
     var nextStepRow = doc.createElement('li');
+
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
-    nextStepRow.innerHTML = routeStep.toString() + ". " + name.toString();
+    var image = doc.createElement('img');
+    image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50})
+    nextStepRow.appendChild(image);
+    var div = doc.createElement('div');
+    div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
+    nextStepRow.appendChild(div);
+
+
     routeStep += 1;
     if (routeSteps.children.length == 0) {
         routeSteps.appendChild(nextStepRow);
