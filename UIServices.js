@@ -70,7 +70,7 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(name, index) {
+function addRouteStep(poi, index) {
     var nextStepRow = doc.createElement('li');
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
