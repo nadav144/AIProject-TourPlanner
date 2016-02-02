@@ -29,46 +29,70 @@
 
 </head>
 <body>
-<div id="inputs1" class="row">
-    <img src="http://www.userlogos.org/files/logos/1air2philou/google-maps-topview.png" height="100px"/>
-</div>
-<div id="inputs1" class="row">
-
-    <div id="inputs" style="background-color: lightblue">
-        <div id="locationField" class="col-sm-6">
-            <!--Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" type="text">-->
-            Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel">
-            <br/>
-            End Address: <input id="endAddressInput" placeholder=""
-                                onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel">
-        </div>
-        <div id="timesField" class="col-sm-6">
-            Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00">
-            <br/>
-            End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00">
-        </div>
-
-        <div id="sendButtonDiv" style="text-align: center">
-            <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();">Find Best Route!
-            </button>
-        </div>
+    <div id="inputs1" class="row">
+        <img src="http://www.userlogos.org/files/logos/1air2philou/google-maps-topview.png" height="100px"/>
     </div>
-</div>
-    <div id = "content" class="row">
-        <div id = "map_inputs" class="col-sm-9" style="padding-right: 0;">
+    <div id="content" class="row">
+        <div id="inputsContainer" class="col-sm-3" style="background-color: lightblue">
+            <div class="row">
+                <div class="col-sm-6" style="text-align: center">
+                    Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel">
+                </div>
+                <div id="startAddressButtons" class="col-sm-6">
+                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Washington, D.C., DC, United States');">Washington</button>
+                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('New York, NY, United States');">New York</button>
+                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
+                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Jerusalem, Israel');">Jerusalem</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6" style="text-align: center">
+                    End Address: <input id="endAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel">
+                </div>
+                <div id="endAddressButtons" class="col-sm-6">
+                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Washington, D.C., DC, United States');">Washington</button>
+                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('New York, NY, United States');">New York</button>
+                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
+                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Jerusalem, Israel');">Jerusalem</button>
+                </div>
+            </div>
+            <div class="row">
+                <div id="startTimeButtons" class="col-sm-6" style="text-align: center">
+                    Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6" style="text-align: center">
+                    End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00">
+                </div>
+                <div id="endTimeButtons" class="col-sm-6">
+                    <button class="btn btn-sm btn-default" onclick="updateEndTime(1);">1 day</button>
+                    <button class="btn btn-sm btn-default" onclick="updateEndTime(2);">2 days</button>
+                    <button class="btn btn-sm btn-default" onclick="updateEndTime(7);">1 week</button>
+                </div>
+            </div>
+
+
+            <div id="sendButtonDiv" class="row" style="text-align: center">
+                <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();">Find Best Route!
+                </button>
+            </div>
+        </div>
+        <div id ="mapAndLog" class="col-sm-7" style="padding: 0;">
             <div id="map" style="height: 530px"></div>
 
             <div id="dataLog" style="padding: 0; background-color: burlywood;">
-                <textarea id="logText" class="well" style="width: 100%; height: 150px; resize: none; margin-bottom: 0" disabled></textarea>
+                <textarea id="logText" class="well" style="width: 100%; height: 150px; resize: none; margin-bottom: 0" disabled>
+                </textarea>
             </div>
         </div>
-
-        <div id = "route" class="col-sm-3" style="padding: 0;">
+        <div id = "route" class="col-sm-2" style="padding: 0;">
             <ul id="routeSteps" class="list-group">
                 <!--route steps dynamically created here-->
             </ul>
         </div>
     </div>
+
 
 
     <script type="application/javascript">
@@ -122,6 +146,8 @@
         var endMarker;
 
 
+
+
         // [START region_geolocation]
         // Bias the autocomplete object to the user's geographical location,
         // as supplied by the browser's 'navigator.geolocation' object.
@@ -129,7 +155,7 @@
 //            log ("in geolocate");
             if (navigator.geolocation) {
 //                log ("navigator.geolocation object good"); //todo: delete me
-                console.log(navigator.geolocation);
+//                console.log(navigator.geolocation); //todo: delete me
                 navigator.geolocation.getCurrentPosition(function(position) {
 //                    console.log(position); // todo: delete me
                     var geolocation = {
@@ -267,11 +293,26 @@
                 }
             });
         }
+        function updateStartAddress (address) {
+            if (address) {
+                document.getElementById("startAddressInput").value = address;
+            }
+            document.getElementById("startAddressInput").focus();
+            document.getElementById("startAddressInput").blur();
+        }
+        function updateEndAddress (address) {
+            if (address) {
+                document.getElementById("endAddressInput").value = address;
+            }
+            document.getElementById("endAddressInput").focus();
+            document.getElementById("endAddressInput").blur();
+        }
+        function updateEndTime (time) {
+            document.getElementById("endTime").value = "1970-01-0" + time.toString() + "T17:00";
+        }
 
-        document.getElementById("startAddressInput").focus();
-        document.getElementById("startAddressInput").blur();
-        document.getElementById("endAddressInput").focus();
-        document.getElementById("endAddressInput").blur();
+        updateStartAddress();
+        updateEndAddress();
     </script>
 
 

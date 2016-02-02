@@ -75,7 +75,7 @@ function getNeigbors(node, callback) {
     var index = Math.floor(Math.random() * (node.pois.length - 1));
 
     var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
-    console.log(searchRadius);
+    //console.log(searchRadius);
     getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
         var neigbors = [];
         for (var i = 0; i < newpois.length; i++) {
