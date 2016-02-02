@@ -118,6 +118,9 @@
 
         initAutocomplete();
 
+        var startmarker;
+        var endMarker;
+
 
         // [START region_geolocation]
         // Bias the autocomplete object to the user's geographical location,
@@ -151,8 +154,20 @@
                 if (status == google.maps.GeocoderStatus.OK) {
                     if (inputField.id === "startAddressInput") {
                         startAddressLoc = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+                        if (startmarker == null) {
+                            startmarker = createMarker({location: startAddressLoc, name: "start"}, map, 0);
+                        } else {
+                            startmarker.setPosition(startAddressLoc);
+                            fitMap(true);
+                        }
                     } else {
                         endAddressLoc = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+                        if (endMarker == null) {
+                            endMarker = createMarker({location: endAddressLoc, name: "end"}, map, 1);
+                        } else {
+                            endMarker.setPosition(endAddressLoc);
+                            fitMap(true);
+                        }
                     }
                 }
             });
@@ -160,9 +175,7 @@
 
         function sendDataToHandler() {
 
-            markers.forEach(function (m) {
-                m.setMap(null);
-            });
+            clear();
 
             var startDate = new Date(document.getElementById("startTime").value);
             var endDate = new Date(document.getElementById("endTime").value);
@@ -191,10 +204,7 @@
             }
 
 //            console.log(tourLength);
-//            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600);
-
-            map.panTo(startAddressLoc);
-
+//            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600)
 
             log("finding best route");
             var res = LocalSearchGreedy(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
@@ -221,7 +231,7 @@
         }
 
         function fitMap() {
-            var bounds = new google.maps.LatLngBounds();
+//            var bounds = new google.maps.LatLngBounds();
             for (var i = 0; i < markers.length; i++) {
                 bounds.extend(markers[i].getPosition());
             }

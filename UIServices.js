@@ -5,6 +5,7 @@
 var doc;
 var logTextArea;
 var routeSteps;
+bounds = new google.maps.LatLngBounds();
 function initializeUIServices(document) {
     doc = document;
     logTextArea = doc.getElementById("logText");
@@ -32,7 +33,7 @@ function error(content) {
 
 infowindow = new google.maps.InfoWindow();
 // TODO:: CLEAR on new route
-bounds = new google.maps.LatLngBounds();
+
 
 var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -82,4 +83,20 @@ function addRouteStep(name, index) {
     }
 
 
+}
+
+function clear() {
+    markers.forEach(function (m) {
+        m.setMap(null);
+    });
+
+    markers = [];
+    markers.push(startmarker);
+    markers.push(endMarker);
+    markers.forEach(function (m) {
+        m.setMap(map);
+    });
+
+    bounds = new google.maps.LatLngBounds();
+    fitMap();
 }
