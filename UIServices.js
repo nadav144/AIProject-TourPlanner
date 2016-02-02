@@ -11,16 +11,18 @@ function initializeUIServices(document) {
     routeSteps = doc.getElementById("routeSteps");
 }
 
+var logLine = 1;
 function log(content){
     //if (typeof content === "object") {
     //    logTextArea.value += JSON.stringify(content) + "\n";
     //} else {
     //    logTextArea.value += content + "\n";
     //}
-    logTextArea.value += content + "\n";
+    logTextArea.value += logLine.toString() + ". " + content + "\n";
+    logLine++;
     logTextArea.scrollTop = logTextArea.scrollHeight;
 
-    console.log(content);
+    //console.log(content);
 }
 
 function error(content) {

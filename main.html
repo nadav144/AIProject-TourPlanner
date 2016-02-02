@@ -36,11 +36,11 @@
 
     <div id="inputs" style="background-color: lightblue">
         <div id="locationField" class="col-sm-6">
-            Start Address: <input id="startAddress" placeholder="Enter your address"
-                                  onFocus="geolocate()" type="text" value="Jerusalem, Israel">
+            <!--Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" type="text">-->
+            Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel">
             <br/>
-            End Address: <input id="endAddress" placeholder="Enter your address"
-                                onFocus="geolocate()" type="text" value="Jerusalem, Israel">
+            End Address: <input id="endAddressInput" placeholder=""
+                                onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel">
         </div>
         <div id="timesField" class="col-sm-6">
             Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00">
@@ -59,7 +59,7 @@
             <div id="map" style="height: 530px"></div>
 
             <div id="dataLog" style="padding: 0; background-color: burlywood;">
-                <textarea id="logText" class="well" style="width: 100%; height: 100px; resize: none; margin-bottom: 0" disabled></textarea>
+                <textarea id="logText" class="well" style="width: 100%; height: 150px; resize: none; margin-bottom: 0" disabled></textarea>
             </div>
         </div>
 
@@ -84,6 +84,7 @@
 
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer;
+        var geocoder = new google.maps.Geocoder();
 
         directionsDisplay.setMap(map);
         directionsDisplay.setOptions({suppressMarkers: true});
@@ -94,6 +95,7 @@
         initializeUIServices(document);
 
         var placeSearch, startAddress, endAddress;
+        var startAddressLoc, endAddressLoc;
         var componentForm = {
             street_number: 'short_name',
             route: 'long_name',
@@ -107,10 +109,10 @@
             // Create the autocomplete object, restricting the search to geographical
             // location types.
             startAddress = new google.maps.places.Autocomplete(
-                    /** @type {!HTMLInputElement} */(document.getElementById('startAddress')),
+                    /** @type {!HTMLInputElement} */(document.getElementById('startAddressInput')),
                     {types: ['geocode']});
             endAddress = new google.maps.places.Autocomplete(
-                    /** @type {!HTMLInputElement} */(document.getElementById('endAddress')),
+                    /** @type {!HTMLInputElement} */(document.getElementById('endAddressInput')),
                     {types: ['geocode']});
         }
 
@@ -121,8 +123,12 @@
         // Bias the autocomplete object to the user's geographical location,
         // as supplied by the browser's 'navigator.geolocation' object.
         function geolocate() {
+//            log ("in geolocate");
             if (navigator.geolocation) {
+//                log ("navigator.geolocation object good"); //todo: delete me
+                console.log(navigator.geolocation);
                 navigator.geolocation.getCurrentPosition(function(position) {
+//                    console.log(position); // todo: delete me
                     var geolocation = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
@@ -131,11 +137,26 @@
                         center: geolocation,
                         radius: position.coords.accuracy
                     });
-                    startAddress.setBounds(circle.getBounds());
+//                    startAddress.setBounds(circle.getBounds());
+//                    console.log(startAddress.getPlace()); //todo: delete me
                 });
+            } else {
+//                log ("navigator.geolocation object bad"); //todo: delete me
             }
         }
         // [END region_geolocation]
+
+        function updateLocation(inputField) {
+            geocoder.geocode({"address":inputField.value }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (inputField.id === "startAddressInput") {
+                        startAddressLoc = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+                    } else {
+                        endAddressLoc = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()};
+                    }
+                }
+            });
+        }
 
         function sendDataToHandler() {
 
@@ -143,8 +164,6 @@
                 m.setMap(null);
             });
 
-            var startPlace = startAddress.getPlace();
-            var endPlace = endAddress.getPlace();
             var startDate = new Date(document.getElementById("startTime").value);
             var endDate = new Date(document.getElementById("endTime").value);
 
@@ -172,16 +191,13 @@
             }
 
 //            console.log(tourLength);
-
-            var tourStartLoc = {lat: startPlace.geometry.location.lat(), lng: startPlace.geometry.location.lng()};
-            var tourEndLoc = {lat: endPlace.geometry.location.lat(), lng: endPlace.geometry.location.lng()};
 //            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600);
 
-            map.panTo(tourStartLoc);
+            map.panTo(startAddressLoc);
 
 
             log("finding best route");
-            var res = LocalSearchGreedy(tourStartLoc, tourEndLoc, tourLength, function (result, error) {
+            var res = LocalSearchGreedy(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
                 log("==== RESULT =====");
                 log(result);
                 calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
@@ -241,6 +257,11 @@
                 }
             });
         }
+
+        document.getElementById("startAddressInput").focus();
+        document.getElementById("startAddressInput").blur();
+        document.getElementById("endAddressInput").focus();
+        document.getElementById("endAddressInput").blur();
     </script>
 
 
