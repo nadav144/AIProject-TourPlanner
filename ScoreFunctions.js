@@ -54,7 +54,7 @@ function photosScore() {
                 score += node.pois[i].photos.length;
             }
         }
-        return Math.min(1, score / (4 * node.pois.length));
+        return Math.min(1, score / (20 * node.pois.length));
     }
 }
 
