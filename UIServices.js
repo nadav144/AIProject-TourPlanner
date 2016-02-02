@@ -75,6 +75,9 @@ function addRouteStep(name, index) {
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
     nextStepRow.innerHTML = routeStep.toString() + ". " + name.toString();
+    nextStepRow.style.backgroundColor = "aquamarine";
+    nextStepRow.onmouseover = function () {this.style.opacity = "0.6";};
+    nextStepRow.onmouseout = function () {this.style.opacity = "1";};
     routeStep += 1;
     if (routeSteps.children.length == 0) {
         routeSteps.appendChild(nextStepRow);
@@ -89,6 +92,13 @@ function clear() {
     markers.forEach(function (m) {
         m.setMap(null);
     });
+
+    // delete route from map
+    directionsDisplay.setDirections({geocoded_waypoints: [], routes: [], status: 'OK', request: Object});
+
+    // clear all route steps
+    routeSteps.innerHTML = "";
+    routeStep = 1;
 
     markers = [];
     markers.push(startmarker);
