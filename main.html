@@ -82,8 +82,7 @@
             <div id="map" style="height: 530px"></div>
 
             <div id="dataLog" style="padding: 0; background-color: burlywood;">
-                <textarea id="logText" class="well" style="width: 100%; height: 150px; resize: none; margin-bottom: 0" disabled>
-                </textarea>
+                <textarea id="logText" class="well" style="width: 100%; height: 150px; resize: none; margin-bottom: 0" disabled></textarea>
             </div>
         </div>
         <div id = "route" class="col-sm-2" style="padding: 0;">
@@ -265,7 +264,6 @@
             map.fitBounds(bounds);
         }
 
-
         function calculateAndDisplayRoute(directionsService, directionsDisplay, pois) {
 
 
@@ -287,6 +285,7 @@
                 waypoints: waypoints
             }, function (response, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
+                    console.log(response);
                     directionsDisplay.setDirections(response);
                 } else {
                     window.alert('Directions request failed due to ' + status);
