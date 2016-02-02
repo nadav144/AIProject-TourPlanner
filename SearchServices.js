@@ -17,7 +17,7 @@ function LocalSearchGreedy(start, finish, time, callback) {
     var distance =  getDistance(spoi.location, fpoi.location);
 
     if (distance.time < time) {
-        var node = new Node(time, [spoi, fpoi], [distance]);
+        var node = new Node(time, time, [spoi, fpoi], [distance]);
         next(node, callback);
 
     } else {
@@ -35,12 +35,12 @@ function next(node, callbackOnFinish) {
     }
 
     var neighbors = getNeigbors(node, function (neighbors, index) {
-        var maxScore = 0;
+        var maxScore = null;
         var maxNode = [];
         for (var i = 0; i < neighbors.length; i++) {
             var n = neighbors[i];
             var score = getScore(n, huristic);
-            if (score > maxScore) {
+            if (maxScore == null || score > maxScore) {
                 maxNode = [n];
                 maxScore = score;
             } else if (score == maxScore) {
@@ -55,6 +55,9 @@ function next(node, callbackOnFinish) {
             // update thte node to be the a randome from the max
             var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
             log("Added location:" + nextnode.pois[index + 1].name);
+            //log("score:");
+            //huristic.calc(node, true);
+
             markers.push(createMarker(nextnode.pois[index + 1], map, index + 1));
             addRouteStep(nextnode.pois[index + 1].name, index + 1);
             next(nextnode, callbackOnFinish);
@@ -64,6 +67,7 @@ function next(node, callbackOnFinish) {
 }
 
 function getNeigbors(node, callback) {
+
     if (node.isTerminal()) {
         return [];
     }
@@ -94,10 +98,11 @@ function getNeigbors(node, callback) {
 
 }
 
-function Node(time, pois, distances) {
+function Node(originalTime, time, pois, distances) {
     this.self = this;
     this.pois = pois;
     this.distances = distances;
+    this.originalTime = originalTime;
     this.timeRemainingHours = time;
 
 
@@ -120,7 +125,7 @@ function Node(time, pois, distances) {
 
         var newtime = this.timeRemainingHours + oldTime - newDistances[index].time - newDistances[index + 1].time - poi.time;
 
-        return new Node(newtime, newpois, newDistances);
+        return new Node(this.originalTime, newtime, newpois, newDistances);
 
     };
 

@@ -6,18 +6,24 @@
 function ScoreHuristic() {
 
     var scores = [];
-    scores.push({weight: 0.7, score: new ratingScore()});
+    scores.push({weight: 1, score: new ratingScore()});
     scores.push({weight: 0.4, score: new typesScore()});
     scores.push({weight: 0.5, score: new photosScore()});
     scores.push({weight: -0.7, score: new longestDistanceScore()});
-    scores.push({weight: -0.2, score: new closeToEnd()});
-    scores.push({weight: 10, score: new simpsonsDiversityScore()});
+    scores.push({weight: -0.4, score: new closeToEnd()});
+    scores.push({weight: 0.5, score: new simpsonsDiversityScore()});
 
 
-    this.calc = function x(node) {
+    this.calc = function x(node, print) {
         var score = 0;
         scores.forEach(function (s) {
-            score += s.score.calc(node) * s.weight;
+            var newscore = s.score.calc(node);
+
+            score += newscore * s.weight;
+            if (print == true) {
+                console.log(s.score.name + "*" + s.weight + " : " + newscore + " ");
+            }
+
         });
 
         return score;
@@ -27,16 +33,20 @@ function ScoreHuristic() {
 
 
 function ratingScore() {
+    this.name = "rating";
     this.calc = function x(node) {
         var score = 0;
         for (var i = 0; i < node.pois.length; i++) {
-            score += node.pois[i].rating;
+            if (node.pois[i].rating != null) {
+                score += node.pois[i].rating;
+            }
         }
-        return score;
+        return score / (5.0 * node.pois.length);
     }
 }
 
 function photosScore() {
+    this.name = "photos";
     this.calc = function x(node) {
         var score = 0;
         for (var i = 0; i < node.pois.length; i++) {
@@ -44,23 +54,25 @@ function photosScore() {
                 score += node.pois[i].photos.length;
             }
         }
-        return score;
+        return Math.min(1, score / (4 * node.pois.length));
     }
 }
 
 function typesScore() {
+    this.name = "types";
     this.calc = function x(node) {
         var score = 0;
         for (var i = 0; i < node.pois.length; i++) {
             score += node.pois[i].types.length * 0.7;
 
         }
-        return score;
+        return Math.min(1, score / (6 * node.pois.length));
     }
 }
 
 //http://www.countrysideinfo.co.uk/simpsons.htm
 function simpsonsDiversityScore() {
+    this.name = "diverstiy";
     this.calc = function x(node) {
         var score = 0;
         var sum = 0;
@@ -81,22 +93,24 @@ function simpsonsDiversityScore() {
         keys.forEach(function (x) {
             score += (types[x] * (types[x] - 1)) / (sum * (sum - 1));
         });
-        return score;
+        return score * 10;
     }
 }
 
 function longestDistanceScore() {
+    this.name = "longestDistance";
     this.calc = function (node) {
         var score = 0;
         node.distances.forEach(function (dist) {
             score = Math.max(score, dist.time);
         });
-        return score;
+        return score / node.originalTime;
     }
 }
 
 function closeToEnd() {
+    this.name = "closeToEnd";
     this.calc = function (node) {
-        return node.distances[node.distances.length - 1].time;
+        return node.distances[node.distances.length - 1].time / (node.originalTime / 2);
     }
 }

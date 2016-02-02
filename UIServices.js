@@ -36,7 +36,7 @@ var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 
 function createMarker(place, map, index) {
-    var placeLoc = place.location;
+
     var marker = new google.maps.Marker({
         map: map,
         //place: {location: place.originalLocation, placeId: place.placeID},
