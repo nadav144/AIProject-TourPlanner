@@ -93,7 +93,7 @@ function clear() {
         m.setMap(null);
     });
 
-    // delete route from map
+    // delete route from map.
     directionsDisplay.setDirections({geocoded_waypoints: [], routes: [], status: 'OK', request: Object});
 
     // clear all route steps
