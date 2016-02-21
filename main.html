@@ -231,10 +231,11 @@
 //            console.log(tourLength);
 //            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600)
 
-            log("finding best route");
-            var res = LocalSearchGreedy(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
+            log("Finding best route:");
+            var searchAlgo = new LocalSearchGreedy();
+            var res = searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
                 log("==== RESULT =====");
-                log(result);
+//                log(result);
                 calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
                 for (var i = 0; i < result.pois.length; i++) {
 //                    markers.push(createMarker(result.pois[i], map));
@@ -242,8 +243,6 @@
                 fitMap();
             });
 
-
-            return;
 //            // Get each component of the address from the place details
 //            // and fill the corresponding field on the form.
 //            for (var i = 0; i < place.address_components.length; i++) {

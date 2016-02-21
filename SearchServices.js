@@ -10,95 +10,106 @@ var SEARCH_RADIUS = 50000;
 var huristic = new ScoreHuristic();
 
 
-function LocalSearchGreedy(start, finish, time, callback) {
-    // Generate Start node containing a single route
-    var spoi = new POI(TYPE_START, start);
-    var fpoi = new POI(TYPE_FINISH, finish);
-    var distance =  getDistance(spoi.location, fpoi.location);
+function LocalSearchGreedy(){
+    this.self = this;
 
-    if (distance.time < time) {
-        var node = new Node(time, time, [spoi, fpoi], [distance]);
-        next(node, callback);
+    function getNeighbours (node, callback) {
 
-    } else {
-        var errortext = "Distance alone is more than trip time.";
-        error(errortext);
-        callback(null, error);
-    }
+        if (node.isTerminal()) {
+            return [];
+        }
+        // random select a place to add
+        var index = Math.floor(Math.random() * (node.pois.length - 1));
 
-}
-
-function next(node, callbackOnFinish) {
-
-    if (node.isTerminal()) {
-        callbackOnFinish(node);
-    }
-
-    var neighbors = getNeigbors(node, function (neighbors, index) {
-        var maxScore = null;
-        var maxNode = [];
-        for (var i = 0; i < neighbors.length; i++) {
-            var n = neighbors[i];
-            var score = getScore(n, huristic);
-            if (maxScore == null || score > maxScore) {
-                maxNode = [n];
-                maxScore = score;
-            } else if (score == maxScore) {
-                maxNode.push(n);
+        var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+        //console.log(searchRadius);
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
+            var neigbors = [];
+            for (var i = 0; i < newpois.length; i++) {
+                var exists = false;
+                for (var j = 0; j < node.pois.length; j++) {
+                    if (newpois[i].placeID == node.pois[j].placeID) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    var newnode = node.cloneNewPOI(index, newpois[i]);
+                    if (newnode.timeRemainingHours >= 0) {
+                        neigbors.push(newnode);
+                    }
+                }
             }
 
-        }
-        if (maxNode.length == 0) {
+            callback(neigbors, index);
+        });
+
+    }
+
+    function next(node, callbackOnFinish) {
+
+        if (node.isTerminal()) {
             callbackOnFinish(node);
-        } else {
-
-            // update thte node to be the a randome from the max
-            var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
-            log("Added location:" + nextnode.pois[index + 1].name);
-            //log("score:");
-            //huristic.calc(node, true);
-
-            markers.push(createMarker(nextnode.pois[index + 1], map, index + 1));
-            addRouteStep(nextnode.pois[index + 1], index + 1);
-            next(nextnode, callbackOnFinish);
         }
 
-    });
-}
+        var neighbours = getNeighbours(node, function (neighbours, index) {
+            var maxScore = null;
+            var maxNode = [];
+            for (var i = 0; i < neighbours.length; i++) {
+                var n = neighbours[i];
+                var score = getScore(n, huristic);
+                if (maxScore == null || score > maxScore) {
+                    maxNode = [n];
+                    maxScore = score;
+                } else if (score == maxScore) {
+                    maxNode.push(n);
+                }
 
-function getNeigbors(node, callback) {
+            }
+            if (maxNode.length == 0) {
+                callbackOnFinish(node);
+            } else {
 
-    if (node.isTerminal()) {
-        return [];
+                // update thte node to be the a randome from the max
+                var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
+                log("Added location:" + nextnode.pois[index + 1].name);
+                //log("score:");
+                //huristic.calc(node, true);
+
+                createMarker(nextnode.pois[index + 1], map, index + 1);
+                addRouteStep(nextnode.pois[index + 1], index + 1);
+                next(nextnode, callbackOnFinish);
+            }
+
+        });
     }
-    // random select a place to add
-    var index = Math.floor(Math.random() * (node.pois.length - 1));
 
-    var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
-    //console.log(searchRadius);
-    getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
-        var neigbors = [];
-        for (var i = 0; i < newpois.length; i++) {
-            var exists = false;
-            for (var j = 0; j < node.pois.length; j++) {
-                if (newpois[i].placeID == node.pois[j].placeID) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                var newnode = node.cloneNewPOI(index, newpois[i]);
-                if (newnode.timeRemainingHours >= 0) {
-                    neigbors.push(newnode);
-                }
-            }
+    this.searchRoute = function LocalSearchGreedy(start, finish, time, callback) {
+        // Generate Start node containing a single route
+        var spoi = new POI(TYPE_START, start);
+        var fpoi = new POI(TYPE_FINISH, finish);
+        var distance =  getDistance(spoi.location, fpoi.location);
+
+        if (distance.time < time) {
+            var node = new Node(time, time, [spoi, fpoi], [distance]);
+            next(node, callback);
+
+        } else {
+            var errortext = "Distance alone is more than trip time.";
+            error(errortext);
+            callback(null, error);
         }
 
-        callback(neigbors, index);
-    });
+    };
 
+    return this;
 
 }
+
+
+
+
+
 
 function Node(originalTime, time, pois, distances) {
     this.self = this;

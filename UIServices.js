@@ -53,6 +53,8 @@ function createMarker(place, map, index) {
         infowindow.open(map, this);
     });
 
+    console.log(marker);
+
     markers.splice(index, 0, marker);
 
     var labelIndex = 0;
@@ -81,7 +83,7 @@ function addRouteStep(poi, index) {
     div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
     nextStepRow.appendChild(div);
     nextStepRow.style.backgroundColor = "aquamarine";
-    nextStepRow.onmouseover = function () {this.style.opacity = "0.6";};
+    nextStepRow.onmouseover = function () {this.style.opacity = "0.8";};
     nextStepRow.onmouseout = function () {this.style.opacity = "1";};
     routeStep += 1;
     if (routeSteps.children.length == 0) {
@@ -114,4 +116,8 @@ function clear() {
 
     bounds = new google.maps.LatLngBounds();
     fitMap();
+}
+
+function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
+    //switch
 }
