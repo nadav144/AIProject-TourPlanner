@@ -77,8 +77,10 @@ function addRouteStep(poi, index) {
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
     var image = doc.createElement('img');
-    image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50})
-    nextStepRow.appendChild(image);
+    if (poi.photos) {
+        image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50});
+        nextStepRow.appendChild(image);
+    }
     var div = doc.createElement('div');
     div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
     nextStepRow.appendChild(div);
@@ -119,5 +121,14 @@ function clear() {
 }
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
-    //switch
+    var searchAlgo = new LocalSearchGreedy();
+    var res = searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
+        log("==== RESULT =====");
+//                log(result);
+        calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
+        for (var i = 0; i < result.pois.length; i++) {
+//                    markers.push(createMarker(result.pois[i], map));
+        }
+        fitMap();
+    });
 }
