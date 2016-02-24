@@ -3,7 +3,7 @@
  */
 
 
-function ScoreHuristic() {
+function ScoreHeuristic() {
 
     var scores = [];
     scores.push({weight: 1, score: new ratingScore()});
@@ -72,7 +72,7 @@ function typesScore() {
 
 //http://www.countrysideinfo.co.uk/simpsons.htm
 function simpsonsDiversityScore() {
-    this.name = "diverstiy";
+    this.name = "diversity";
     this.calc = function x(node) {
         var score = 0;
         var sum = 0;

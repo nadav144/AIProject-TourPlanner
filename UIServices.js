@@ -53,7 +53,7 @@ function createMarker(place, map, index) {
         infowindow.open(map, this);
     });
 
-    console.log(marker);
+    //console.log(marker);
 
     markers.splice(index, 0, marker);
 
@@ -121,7 +121,8 @@ function clear() {
 }
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
-    var searchAlgo = new LocalSearchGreedy();
+    var searchAlgo = new LocalSearchGreedyWithNeighbourOptimize();
+    //var searchAlgo = new LocalSearchGreedy();
     var res = searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT =====");
 //                log(result);
