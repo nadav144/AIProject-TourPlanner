@@ -77,7 +77,8 @@ function addRouteStep(poi, index) {
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
     nextStepRow.style.backgroundColor = "white";
-    nextStepRow.marginRight = "20px";
+    nextStepRow.style.marginRight = "20px";
+    nextStepRow.style.minHeight = "50px";
     nextStepRow.onmouseover = function () {this.style.backgroundColor = "#e6e6e6";};
     nextStepRow.onmouseout = function () {this.style.backgroundColor = "white";};
 

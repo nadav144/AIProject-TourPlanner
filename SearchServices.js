@@ -273,6 +273,7 @@ function Node(originalTime, time, pois, distances) {
         // returns the time it took from index i to i+1 to the time remaining, and subtract the 2 new additional times.
         var newtime = this.timeRemainingHours + oldTime - newDistances[index].time - newDistances[index + 1].time - poi.time;
 
+        //console.log("time remaining: " + newtime.toString());
         return new Node(this.originalTime, newtime, newpois, newDistances);
 
     };

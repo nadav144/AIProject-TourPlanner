@@ -12,6 +12,7 @@ function ScoreHeuristic() {
     scores.push({weight: -0.7, score: new longestDistanceScore()});
     scores.push({weight: -0.4, score: new closeToEnd()});
     scores.push({weight: 0.5, score: new simpsonsDiversityScore()});
+    scores.push({weight: -0.1, score: new clusterFactor()});
 
 
     this.calc = function x(node, print) {
@@ -113,4 +114,23 @@ function closeToEnd() {
     this.calc = function (node) {
         return node.distances[node.distances.length - 1].time / (node.originalTime / 2);
     }
+}
+
+function clusterFactor() {
+    this.name = "clusterFactor";
+    this.calc = function (node) {
+        var CRITICAL_RADIUS = 5000;
+        var clusters = 0;
+        node.pois.forEach(function (poi1) {
+            node.pois.forEach(function (poi2) {
+                if (poi1 !== poi2) {
+                    var dist = getDistance(poi1.location, poi2.location);
+                    if (dist.airDistance < CRITICAL_RADIUS) {
+                        clusters += 1;
+                    }
+                }
+            })
+        });
+        return (clusters / node.pois.length);
+    };
 }
