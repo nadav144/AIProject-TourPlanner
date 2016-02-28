@@ -79,8 +79,7 @@ function LocalSearchGreedy(){
                 //log("score:");
                 //heuristic.calc(node, true);
 
-                var curMarker = createMarker(nextnode.pois[index + 1], map, index + 1);
-                addRouteStep(nextnode.pois[index + 1], index + 1, curMarker);
+                addStepAndMarker(nextnode, index);
                 next(nextnode, callbackOnFinish);
             }
 
@@ -208,8 +207,7 @@ function LocalSearchGreedyWithNeighbourOptimize(){
                 //log("score:");
                 //heuristic.calc(node, true);
 
-                var curMarker = createMarker(nextnode.pois[index + 1], map, index + 1);
-                addRouteStep(nextnode.pois[index + 1], index + 1, curMarker);
+                addStepAndMarker(nextnode, index);
                 next(nextnode, callbackOnFinish);
             }
 
@@ -311,6 +309,12 @@ function getScore(node, heuristic) {
     return heuristic.calc(node);
 
 }
+
+function addStepAndMarker(nextnode, index) {
+    createMarker(nextnode.pois[index + 1], map, index + 1);
+    addRouteStep(nextnode.pois[index + 1], index + 1);
+}
+
 
 //console.log("about to call populate dropdown");
 //setTimeout(function(){populateDropdownAlgorithms(SEARCH_ALGORITHMS);}, 0);

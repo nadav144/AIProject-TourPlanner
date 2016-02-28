@@ -70,7 +70,7 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(poi, index, marker) {
+function addRouteStep(poi, index) {
     var nextStepRow = document.createElement('li');
 
 
