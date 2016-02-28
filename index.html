@@ -11,17 +11,22 @@
 
     <meta charset="UTF-8">
     <title>SARF - Smart AI Route Finder</title>
+
+
+
+    <!-- Latest compiled and minified CSS bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <script src="jquery-2.2.0.min.js"></script>
-    <script src="ScoreFunctions.js"></script>
-    <script src="POI.js"></script>
-    <script src="SearchServices.js"></script>
-    <script src="Distance.js"></script>
+    <script type="text/javascript" src="ScoreFunctions.js"></script>
+    <script type="text/javascript" src="POI.js"></script>
+    <script type="text/javascript" src="SearchServices.js"></script>
+    <script type="text/javascript" src="Distance.js"></script>
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&libraries=geometry,places"></script>
-    <script src="MapServices.js"></script>
-    <script src="UIServices.js"></script>
+    <script type="text/javascript" src="MapServices.js"></script>
+
+    <script type="text/javascript" src="UIServices.js"></script>
 
 
     <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD74U7x6kSydxWVi7o8-MRFUTIclCrxAhE&signed_in=true&libraries=places" async defer></script>-->
@@ -36,7 +41,7 @@
         <div id="inputsContainer" class="col-sm-3" style="background-color: lightblue">
             <div class="row">
                 <div class="col-sm-6" style="text-align: center">
-                    Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel">
+                    Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel" style="width: 95%">
                 </div>
                 <div id="startAddressButtons" class="col-sm-6">
                     <button class="btn btn-sm btn-default" onclick="updateStartAddress('Washington, D.C., DC, United States');">Washington</button>
@@ -45,9 +50,10 @@
                     <button class="btn btn-sm btn-default" onclick="updateStartAddress('Jerusalem, Israel');">Jerusalem</button>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-sm-6" style="text-align: center">
-                    End Address: <input id="endAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel">
+                    End Address: <input id="endAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel" style="width: 95%">
                 </div>
                 <div id="endAddressButtons" class="col-sm-6">
                     <button class="btn btn-sm btn-default" onclick="updateEndAddress('Washington, D.C., DC, United States');">Washington</button>
@@ -56,14 +62,16 @@
                     <button class="btn btn-sm btn-default" onclick="updateEndAddress('Jerusalem, Israel');">Jerusalem</button>
                 </div>
             </div>
+
             <div class="row">
                 <div id="startTimeButtons" class="col-sm-6" style="text-align: center">
-                    Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00">
+                    Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00" style="width: 95%">
                 </div>
             </div>
+
             <div class="row">
                 <div class="col-sm-6" style="text-align: center">
-                    End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00">
+                    End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00" style="width: 95%">
                 </div>
                 <div id="endTimeButtons" class="col-sm-6">
                     <button class="btn btn-sm btn-default" onclick="updateEndTime(1);">1 day</button>
@@ -72,10 +80,21 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-sm-6">
+                    <h2 style="text-align: center">
+                        Algorithm
+                    </h2>
+                </div>
+                <div class="col-sm-6" style="text-align: center; padding-top: 20px;">
+                    <select id="searchAlgo" style="height: 30px">
+                        <!--Search algorithms dynamically populated here-->
+                    </select>
+                </div>
+            </div>
 
-            <div id="sendButtonDiv" class="row" style="text-align: center">
-                <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();">Find Best Route!
-                </button>
+            <div id="sendButtonDiv" class="row" style="text-align: center; margin: 10px">
+                <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();" >Find Best Route!</button>
             </div>
         </div>
         <div id ="mapAndLog" class="col-sm-7" style="padding: 0;">
@@ -234,7 +253,8 @@
 //            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600)
 
             log("Finding best route:");
-            doSearch("", startAddressLoc, endAddressLoc, tourLength);
+            var dropDown = document.getElementById("searchAlgo");
+            doSearch(dropDown.options[dropDown.selectedIndex].text, startAddressLoc, endAddressLoc, tourLength);
 
 //            // Get each component of the address from the place details
 //            // and fill the corresponding field on the form.
@@ -284,6 +304,7 @@
                 }
             });
         }
+
         function updateStartAddress (address) {
             if (address) {
                 document.getElementById("startAddressInput").value = address;
@@ -304,6 +325,8 @@
 
         updateStartAddress();
         updateEndAddress();
+        populateDropdownAlgorithms(SEARCH_ALGORITHMS);
+
     </script>
 
 

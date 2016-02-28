@@ -2,14 +2,12 @@
  * Created by OdedA on 25-Jan-16.
  */
 
-var doc;
 var logTextArea;
 var routeSteps;
 bounds = new google.maps.LatLngBounds();
 function initializeUIServices(document) {
-    doc = document;
-    logTextArea = doc.getElementById("logText");
-    routeSteps = doc.getElementById("routeSteps");
+    logTextArea = document.getElementById("logText");
+    routeSteps = document.getElementById("routeSteps");
 }
 
 var logLine = 1;
@@ -72,22 +70,36 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(poi, index) {
-    var nextStepRow = doc.createElement('li');
+function addRouteStep(poi, index, marker) {
+    var nextStepRow = document.createElement('li');
+
+
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item';
-    var image = doc.createElement('img');
+    nextStepRow.style.backgroundColor = "white";
+    nextStepRow.marginRight = "20px";
+    nextStepRow.onmouseover = function () {this.style.backgroundColor = "#e6e6e6";};
+    nextStepRow.onmouseout = function () {this.style.backgroundColor = "white";};
+
+    // add image to step if at least 1 exists
+    var image = document.createElement('img');
     if (poi.photos) {
         image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50});
         nextStepRow.appendChild(image);
     }
-    var div = doc.createElement('div');
-    div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
-    nextStepRow.appendChild(div);
-    nextStepRow.style.backgroundColor = "aquamarine";
-    nextStepRow.onmouseover = function () {this.style.opacity = "0.8";};
-    nextStepRow.onmouseout = function () {this.style.opacity = "1";};
+
+    // add text to the step
+    var textDiv = document.createElement('div');
+    //div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
+    textDiv.innerHTML = poi.name.toString();
+    textDiv.style.float = "right";
+    nextStepRow.appendChild(textDiv);
     routeStep += 1;
+
+
+
+
+
     if (routeSteps.children.length == 0) {
         routeSteps.appendChild(nextStepRow);
     } else {
@@ -121,9 +133,9 @@ function clear() {
 }
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
-    var searchAlgo = new LocalSearchGreedyWithNeighbourOptimize();
-    //var searchAlgo = new LocalSearchGreedy();
-    var res = searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
+    document.body.style.cursor='wait';
+    var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
+    searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT =====");
 //                log(result);
         calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
@@ -131,5 +143,19 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
 //                    markers.push(createMarker(result.pois[i], map));
         }
         fitMap();
+        document.body.style.cursor='default';
     });
+}
+
+function populateDropdownAlgorithms(searchAlgorithms) {
+    var selectElem = document.getElementById("searchAlgo");
+    var option;
+    for (var searchAlgoKey in searchAlgorithms) {
+        if (searchAlgorithms.hasOwnProperty(searchAlgoKey)) {
+            option = document.createElement("option");
+            option.innerHTML = searchAlgoKey;
+            selectElem.appendChild(option);
+
+        }
+    }
 }

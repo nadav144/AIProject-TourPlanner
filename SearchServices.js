@@ -3,9 +3,12 @@
  */
 
 
+
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
 var SEARCH_RADIUS = 50000;
+
+var SEARCH_ALGORITHMS = {};
 
 var heuristic = new ScoreHeuristic();
 
@@ -76,8 +79,8 @@ function LocalSearchGreedy(){
                 //log("score:");
                 //heuristic.calc(node, true);
 
-                createMarker(nextnode.pois[index + 1], map, index + 1);
-                addRouteStep(nextnode.pois[index + 1], index + 1);
+                var curMarker = createMarker(nextnode.pois[index + 1], map, index + 1);
+                addRouteStep(nextnode.pois[index + 1], index + 1, curMarker);
                 next(nextnode, callbackOnFinish);
             }
 
@@ -105,9 +108,11 @@ function LocalSearchGreedy(){
     return this;
 
 }
+SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 
 
 function LocalSearchGreedyWithNeighbourOptimize(){
+
     this.self = this;
 
     function getNeighbours (node, callback) {
@@ -203,8 +208,8 @@ function LocalSearchGreedyWithNeighbourOptimize(){
                 //log("score:");
                 //heuristic.calc(node, true);
 
-                createMarker(nextnode.pois[index + 1], map, index + 1);
-                addRouteStep(nextnode.pois[index + 1], index + 1);
+                var curMarker = createMarker(nextnode.pois[index + 1], map, index + 1);
+                addRouteStep(nextnode.pois[index + 1], index + 1, curMarker);
                 next(nextnode, callbackOnFinish);
             }
 
@@ -235,6 +240,7 @@ function LocalSearchGreedyWithNeighbourOptimize(){
     return this;
 
 }
+SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
 
 
@@ -305,3 +311,6 @@ function getScore(node, heuristic) {
     return heuristic.calc(node);
 
 }
+
+//console.log("about to call populate dropdown");
+//setTimeout(function(){populateDropdownAlgorithms(SEARCH_ALGORITHMS);}, 0);
