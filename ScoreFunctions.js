@@ -134,3 +134,19 @@ function clusterFactor() {
         return (clusters / node.pois.length);
     };
 }
+
+
+
+/**
+ * Given an array of scores, reduce the lowest score from all scores, and then normalize all scores to be from 0 to 1.
+ * @param scores
+ * @constructor
+ */
+function NormalizeScores(scores) {
+    var lowest = Math.min.apply(Math, scores);
+    var highest = Math.max.apply(Math, scores);
+    var returnScores = scores.map(function(num) {
+        return (num - lowest)/(highest - lowest);
+    });
+    return returnScores;
+}
