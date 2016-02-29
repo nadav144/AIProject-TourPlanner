@@ -46,9 +46,13 @@ function createMarker(place, map, index) {
         position: place.location
     });
 
-    google.maps.event.addListener(marker, 'click', function () {
+    marker.mapInfoFunc = function () {
         infowindow.setContent(place.name + "<br>" + place.rating);
         infowindow.open(map, this);
+    };
+
+    google.maps.event.addListener(marker, 'click', function () {
+        marker.mapInfoFunc();
     });
 
     //console.log(marker);
@@ -70,7 +74,7 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(poi, index) {
+function addRouteStep(poi, index, marker) {
     var nextStepRow = document.createElement('li');
 
 
@@ -79,8 +83,10 @@ function addRouteStep(poi, index) {
     nextStepRow.style.backgroundColor = "white";
     nextStepRow.style.marginRight = "20px";
     nextStepRow.style.minHeight = "50px";
+    nextStepRow.mapMarker = marker;
     nextStepRow.onmouseover = function () {this.style.backgroundColor = "#e6e6e6";};
     nextStepRow.onmouseout = function () {this.style.backgroundColor = "white";};
+    nextStepRow.onmousedown = function () {this.mapMarker.mapInfoFunc();};
 
     // add image to step if at least 1 exists
     var image = document.createElement('img');
