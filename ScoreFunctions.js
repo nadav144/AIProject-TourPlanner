@@ -119,7 +119,9 @@ function closeToEnd() {
 function clusterFactor() {
     this.name = "clusterFactor";
     this.calc = function (node) {
-        var CRITICAL_RADIUS = 5000;
+
+        // set critical radius to be the distance between the first and last point divided by 20.
+        var CRITICAL_RADIUS = (node.pois[0] - node.pois[node.pois.length - 1]) / 20;
         var clusters = 0;
         node.pois.forEach(function (poi1) {
             node.pois.forEach(function (poi2) {

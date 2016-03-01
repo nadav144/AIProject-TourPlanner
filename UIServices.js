@@ -46,13 +46,17 @@ function createMarker(place, map, index) {
         position: place.location
     });
 
-    marker.mapInfoFunc = function () {
+    marker.markerInfoWindow = function () {
         infowindow.setContent(place.name + "<br>" + place.rating);
         infowindow.open(map, this);
     };
 
+    marker.markerInfoWindowClose = function () {
+        infowindow.close();
+    };
+
     google.maps.event.addListener(marker, 'click', function () {
-        marker.mapInfoFunc();
+        marker.markerInfoWindow();
     });
 
     //console.log(marker);
@@ -84,9 +88,10 @@ function addRouteStep(poi, index, marker) {
     nextStepRow.style.marginRight = "20px";
     nextStepRow.style.minHeight = "50px";
     nextStepRow.mapMarker = marker;
-    nextStepRow.onmouseover = function () {this.style.backgroundColor = "#e6e6e6";};
-    nextStepRow.onmouseout = function () {this.style.backgroundColor = "white";};
-    nextStepRow.onmousedown = function () {this.mapMarker.mapInfoFunc();};
+    nextStepRow.onmouseover = function () { this.style.backgroundColor = "#e6e6e6";
+                                            this.mapMarker.markerInfoWindow();};
+    nextStepRow.onmouseout = function () {  this.style.backgroundColor = "white";
+                                            this.mapMarker.markerInfoWindowClose();};
 
     // add image to step if at least 1 exists
     var image = document.createElement('img');
@@ -141,6 +146,8 @@ function clear() {
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     document.body.style.cursor='wait';
+    var searchButton = document.getElementById("sendButton");
+    searchButton.disabled = true;
     var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
     searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT =====");
@@ -150,7 +157,9 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
 //                    markers.push(createMarker(result.pois[i], map));
         }
         fitMap();
+        console.log("finishing search");
         document.body.style.cursor='default';
+        searchButton.disabled = false;
     });
 }
 
