@@ -107,7 +107,7 @@ function LocalSearchGreedy(){
     return this;
 
 }
-SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
+
 
 
 function LocalSearchGreedyWithNeighbourOptimize(){
@@ -238,11 +238,154 @@ function LocalSearchGreedyWithNeighbourOptimize(){
     return this;
 
 }
+
+
+function GeneticSearch() {
+
+    var population = [];
+    var generationAge = 0;
+
+    function fitness(node) {
+        return getScore(node, heuristic);
+    }
+
+    function selectFromPopulationWithProb(population) {
+        var scores = [];
+
+        for (var i = 0; i < population.length; i++) {
+            scores.push(fitness(population[i]));
+        }
+        console.log(scores);
+        console.log(population);
+        var normalizedscores = NormalizeScores(scores);
+        var indices = [];
+        for (i = 0; i < normalizedscores.length; i++) {
+            for (var j = 0; j < normalizedscores[i] * 100; j++) {
+                indices.push(i);
+            }
+        }
+
+        console.log(indices);
+        var idx = Math.floor(Math.random() * indices.length);
+        return population[indices[idx]];
+    }
+
+
+    function reproduce(x, y) {
+        if (x.pois.length > y.pois.length) {
+            return x;
+        }
+        return y;
+    }
+
+    function mutation(node, callback) {
+        var index = Math.floor(Math.random() * (node.pois.length - 1));
+        var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
+            console.log(newpois);
+            var neighbours = [];
+            for (var i = 0; i < newpois.length; i++) {
+                var exists = false;
+                for (var j = 0; j < node.pois.length; j++) {
+                    if (newpois[i].placeID == node.pois[j].placeID) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    var newNode = node.cloneAndInsertNewPOI(index, newpois[i]);
+                    if (newNode.timeRemainingHours >= 0) {
+                        neighbours.push(newNode);
+                    }
+                }
+            }
+
+
+            var idx = Math.floor(Math.random() * neighbours.length);
+            var newChild = neighbours[idx];
+
+            callback(newChild);
+
+        });
+    }
+
+    function nextGeneration(callback) {
+        console.log("NEW GEN");
+        console.log(generationAge);
+
+        if (generationAge > 1) {
+            // TODO: return Best From pop
+            callback(population[0]);
+            return
+        } else {
+            ReproduceCurrentPop([], 0, callback);
+        }
+
+
+    }
+
+    function ReproduceCurrentPop(new_population, curGenerationIndex, callback) {
+
+        if (curGenerationIndex >= population.length * 1.5) {
+            generationAge++;
+            population = new_population;
+            nextGeneration(callback);
+            return
+        }
+
+        var x = selectFromPopulationWithProb(population);
+        var y = selectFromPopulationWithProb(population);
+        var child = reproduce(x, y);
+        var rand = Math.floor(Math.random() * 100);
+        var mutationProb = 1;
+        if (rand < mutationProb * 100) {
+            console.log("Mutaion");
+
+
+            mutation(child, function x(newChild) {
+                var updated = [].concat(new_population);
+                updated.push(newChild);
+                ReproduceCurrentPop(updated, curGenerationIndex + 1, callback);
+            });
+            // TODO: Remove a point
+        } else {
+            console.log("kee the original child");
+            new_population.push(child);
+            ReproduceCurrentPop(new_population, curGenerationIndex + 1, callback);
+        }
+
+    }
+
+    this.searchRoute = function x(start, finish, time, callback) {
+        // Generate Start node containing a single route
+        var spoi = new POI(TYPE_START, start);
+        var fpoi = new POI(TYPE_FINISH, finish);
+        var distance = getDistance(spoi.location, fpoi.location);
+
+        if (distance.time < time) {
+            var node = new Node(time, time, [spoi, fpoi], [distance]);
+            population.push(node);
+            population.push(node);
+            nextGeneration(function x(node) {
+                console.("CALLBACK CALLED");
+                console.log(node);
+                callback(node)
+            });
+
+        } else {
+            var errortext = "Distance alone is more than trip time.";
+            error(errortext);
+            callback(null, error);
+        }
+
+    };
+
+
+}
+
+SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
+SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
-
-
-
-
 
 
 function Node(originalTime, time, pois, distances) {
