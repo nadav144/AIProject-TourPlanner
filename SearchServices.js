@@ -13,10 +13,10 @@ var SEARCH_ALGORITHMS = {};
 var heuristic = new ScoreHeuristic();
 
 
-function LocalSearchGreedy(){
+function LocalSearchGreedy() {
     this.self = this;
 
-    function getNeighbours (node, callback) {
+    function getNeighbours(node, callback) {
 
         if (node.isTerminal()) {
             return [];
@@ -90,7 +90,7 @@ function LocalSearchGreedy(){
         // Generate Start node containing a single route
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
-        var distance =  getDistance(spoi.location, fpoi.location);
+        var distance = getDistance(spoi.location, fpoi.location);
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);
@@ -109,12 +109,11 @@ function LocalSearchGreedy(){
 }
 
 
-
-function LocalSearchGreedyWithNeighbourOptimize(){
+function LocalSearchGreedyWithNeighbourOptimize() {
 
     this.self = this;
 
-    function getNeighbours (node, callback) {
+    function getNeighbours(node, callback) {
 
         if (node.isTerminal()) {
             return [];
@@ -174,24 +173,24 @@ function LocalSearchGreedyWithNeighbourOptimize(){
                 console.log(node);
                 var tempNeighbour;
                 var bestNeighbour = null;
-                for (var j = 1 ; j < node.pois.length - 2 ; j++) {
-                    tempNeighbour = node.cloneAndSwapIndexes(j, j+1);
-                    console.log("trying to swap index " + j.toString() + " <-> " + (j+1).toString());
+                for (var j = 1; j < node.pois.length - 2; j++) {
+                    tempNeighbour = node.cloneAndSwapIndexes(j, j + 1);
+                    console.log("trying to swap index " + j.toString() + " <-> " + (j + 1).toString());
                     console.log(tempNeighbour);
                     if (bestNeighbour === null || bestNeighbour[0].timeRemainingHours > tempNeighbour.timeRemainingHours) {
-                        bestNeighbour = [tempNeighbour , "swapped " + j.toString() + " <-> " + (j+1).toString()];
+                        bestNeighbour = [tempNeighbour, "swapped " + j.toString() + " <-> " + (j + 1).toString()];
                     }
                 }
                 if (bestNeighbour !== null && bestNeighbour[0].timeRemainingHours > node.timeRemainingHours) {
-                    console.log ("=========================================");
-                    console.log ("new best order found: " +bestNeighbour[1]);
-                    console.log (bestNeighbour[0]);
-                    console.log ("=========================================");
+                    console.log("=========================================");
+                    console.log("new best order found: " + bestNeighbour[1]);
+                    console.log(bestNeighbour[0]);
+                    console.log("=========================================");
                     node = bestNeighbour[0];
                     next(node, callbackOnFinish);
                 } else {
-                    console.log ("best order reached");
-                    log ("best order reached");
+                    console.log("best order reached");
+                    log("best order reached");
                     callbackOnFinish(node);
                     return;
                 }
@@ -213,6 +212,7 @@ function LocalSearchGreedyWithNeighbourOptimize(){
 
         });
     }
+
     function reOrderPOIS() {
 
     }
@@ -221,7 +221,7 @@ function LocalSearchGreedyWithNeighbourOptimize(){
         // Generate Start node containing a single route
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
-        var distance =  getDistance(spoi.location, fpoi.location);
+        var distance = getDistance(spoi.location, fpoi.location);
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);
@@ -245,8 +245,16 @@ function GeneticSearch() {
     var population = [];
     var generationAge = 0;
 
+    function prob(num) {
+        var rand = Math.floor(Math.random() * 100);
+        if (rand < num * 100) {
+            return true;
+        }
+        return false;
+    }
+
     function fitness(node) {
-        return getScore(node, heuristic);
+        return node.calcScore();
     }
 
     function selectFromPopulationWithProb(population) {
@@ -255,8 +263,8 @@ function GeneticSearch() {
         for (var i = 0; i < population.length; i++) {
             scores.push(fitness(population[i]));
         }
-        console.log(scores);
-        console.log(population);
+        //console.log(scores);
+        //console.log(population);
         var normalizedscores = NormalizeScores(scores);
         var indices = [];
         for (i = 0; i < normalizedscores.length; i++) {
@@ -265,24 +273,51 @@ function GeneticSearch() {
             }
         }
 
-        console.log(indices);
+        //console.log(indices);
         var idx = Math.floor(Math.random() * indices.length);
         return population[indices[idx]];
     }
 
 
     function reproduce(x, y) {
-        if (x.pois.length > y.pois.length) {
-            return x;
+        console.log("repreducing");
+        var maxPOIS = Math.max(y.pois.length, x.pois.length);
+        var newpois = [x.pois[0]];
+        // TODO: make sure we don't add the same place twice
+        var addedPlacesIds = [];
+        var remainingTime = x.originalTime;
+        var allplaces = [];
+
+        var newArray = $.merge(y.pois.slice(1, y.pois.length - 1), x.pois.slice(1, x.pois.length - 1));
+        $.each(newArray, function (i, el) {
+            if ($.inArray(el, allplaces) === -1) allplaces.push(el);
+        });
+
+        for (i = 0; i < maxPOIS - 2; i++) {
+            var index = Math.floor(Math.random() * allplaces.length);
+            remainingTime -= allplaces[index].time;
+            newpois.push(allplaces[index]);
+            allplaces.splice(index, 1);
         }
-        return y;
+
+        // add finish
+        newpois.push(x.pois[x.pois.length - 1]);
+
+        var distances = [];
+        for (i = 0; i < newpois.length - 1; i++) {
+            var dis = getDistance(newpois[i].location, newpois[i + 1].location);
+            remainingTime -= dis.time;
+            distances.push(dis);
+        }
+
+        return new Node(x.originalTime, remainingTime, newpois, distances);
     }
 
     function mutation(node, callback) {
         var index = Math.floor(Math.random() * (node.pois.length - 1));
         var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
         getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
-            console.log(newpois);
+            //console.log(newpois);
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
                 var exists = false;
@@ -301,10 +336,15 @@ function GeneticSearch() {
             }
 
 
-            var idx = Math.floor(Math.random() * neighbours.length);
-            var newChild = neighbours[idx];
+            if (neighbours.length > 0) {
+                var idx = Math.floor(Math.random() * neighbours.length);
+                console.log(neighbours);
+                var newChild = neighbours[idx];
 
-            callback(newChild);
+                callback(newChild);
+            } else { // mutaion failed
+                callback(node);
+            }
 
         });
     }
@@ -312,10 +352,12 @@ function GeneticSearch() {
     function nextGeneration(callback) {
         console.log("NEW GEN");
         console.log(generationAge);
+        console.log(population);
 
-        if (generationAge > 1) {
+
+        if (generationAge > 4) {
             // TODO: return Best From pop
-            callback(population[0]);
+            callback(GetMaxNode(population));
             return
         } else {
             ReproduceCurrentPop([], 0, callback);
@@ -336,21 +378,27 @@ function GeneticSearch() {
         var x = selectFromPopulationWithProb(population);
         var y = selectFromPopulationWithProb(population);
         var child = reproduce(x, y);
-        var rand = Math.floor(Math.random() * 100);
-        var mutationProb = 1;
-        if (rand < mutationProb * 100) {
+        if (child == null) {
+            console.log("HERE   1!!!!");
+        }
+        var mutationProb = 1 / generationAge;
+        if (prob(mutationProb)) {
             console.log("Mutaion");
-
-
             mutation(child, function x(newChild) {
                 var updated = [].concat(new_population);
                 updated.push(newChild);
+                if (newChild == null) {
+                    console.log("HERE   2!!!!");
+                }
                 ReproduceCurrentPop(updated, curGenerationIndex + 1, callback);
             });
             // TODO: Remove a point
         } else {
             console.log("kee the original child");
             new_population.push(child);
+            if (child == null) {
+                console.log("HERE   3!!!!");
+            }
             ReproduceCurrentPop(new_population, curGenerationIndex + 1, callback);
         }
 
@@ -367,7 +415,7 @@ function GeneticSearch() {
             population.push(node);
             population.push(node);
             nextGeneration(function x(node) {
-                console.("CALLBACK CALLED");
+                console.log("CALLBACK CALLED");
                 console.log(node);
                 callback(node)
             });
@@ -388,12 +436,31 @@ SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
 
+function GetMaxNode(nodes) {
+    var maxScore = null;
+    var maxNode = [];
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        var score = node.calcScore();
+        if (maxScore == null || score > maxScore) {
+            maxNode = [node];
+            maxScore = score;
+        } else if (score == maxScore) {
+            maxNode.push(node);
+        }
+
+    }
+
+    return maxNode[Math.floor(Math.random() * maxNode.length)];
+}
+
 function Node(originalTime, time, pois, distances) {
     this.self = this;
     this.pois = pois;
     this.distances = distances;
     this.originalTime = originalTime;
     this.timeRemainingHours = time;
+    this.score = null;
 
 
     this.isTerminal = function x() {
@@ -402,6 +469,13 @@ function Node(originalTime, time, pois, distances) {
 
     this.getTimeSpent = function x() {
         return 1;
+    };
+
+    this.calcScore = function x() {
+        if (this.score == null) {
+            this.score = getScore(this, heuristic);
+        }
+        return this.score;
     };
 
     this.cloneAndInsertNewPOI = function (index, poi) {
@@ -433,12 +507,12 @@ function Node(originalTime, time, pois, distances) {
         var newTime = 0;
 
         // sum the time spent in each POI
-        newpois.forEach(function(poi) {
+        newpois.forEach(function (poi) {
             newTime += poi.time;
         });
 
         // compute all the distance between each poi, and sum the additional travel times.
-        for (var i = 0 ; i < newpois.length - 1 ; i++) {
+        for (var i = 0; i < newpois.length - 1; i++) {
             newDistances[i] = getDistance(newpois[i].location, newpois[i + 1].location);
             newTime += newDistances[i].time;
         }

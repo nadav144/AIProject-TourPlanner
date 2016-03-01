@@ -152,6 +152,13 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT =====");
 //                log(result);
+        // TODO: make this nicer
+        if (searchName === "Genetic Search") {
+            for (var j = 0; j < result.pois.length - 1; j++) {
+                addStepAndMarker(result, j);
+            }
+        }
+
         calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
         for (var i = 0; i < result.pois.length; i++) {
 //                    markers.push(createMarker(result.pois[i], map));

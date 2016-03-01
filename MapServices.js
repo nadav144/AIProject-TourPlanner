@@ -4,9 +4,21 @@
 
 
 var service = null;
-
+var lastRequestTime = new Date();
+var queryWaitTime = 201;
 function InitMapService(mapService) {
     service = mapService;
+}
+
+
+function getWaitTime() {
+    var now = new Date();
+    var diff = now - lastRequestTime;
+    if (diff > queryWaitTime) {
+        return 0;
+    } else {
+        return queryWaitTime - diff;
+    }
 }
 
 function getPOIsAroundLocation(location, radius, preferences, callback) {
@@ -28,8 +40,9 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
                 if (pagination.hasNextPage) {
                     totalCount++;
                     setTimeout(function x() {
+                        lastRequestTime = new Date();
                         pagination.nextPage();
-                    }, 200);
+                    }, getWaitTime());
                 } else {
                     if (querycount == totalCount) {
                         callback(pois);
@@ -55,6 +68,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
         querycount = 0;
         totalCount = 2;
 
+        lastRequestTime = new Date();
         service.textSearch({
                 location: location,
                 radius: radius,
@@ -73,7 +87,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
             }, process
         );
 
-    }, 220);
+    }, getWaitTime());
 }
 
 function getDistance(start, finish) {
