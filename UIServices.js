@@ -11,7 +11,7 @@ function initializeUIServices(document) {
 }
 
 var logLine = 1;
-function log(content){
+function log(content) {
     //if (typeof content === "object") {
     //    logTextArea.value += JSON.stringify(content) + "\n";
     //} else {
@@ -83,34 +83,41 @@ function addRouteStep(poi, index, marker) {
 
 
     nextStepRow.id = 'routeStep_' + routeStep.toString();
-    nextStepRow.className = 'list-group-item';
-    nextStepRow.style.backgroundColor = "white";
-    nextStepRow.style.marginRight = "20px";
-    nextStepRow.style.minHeight = "50px";
+    nextStepRow.className = 'list-group-item routstep';
     nextStepRow.mapMarker = marker;
-    nextStepRow.onmouseover = function () { this.style.backgroundColor = "#e6e6e6";
-                                            this.mapMarker.markerInfoWindow();};
-    nextStepRow.onmouseout = function () {  this.style.backgroundColor = "white";
-                                            this.mapMarker.markerInfoWindowClose();};
+    //nextStepRow.innerHTML =
+    nextStepRow.onmouseover = function () {
+        this.style.backgroundColor = "#e6e6e6";
+        this.mapMarker.markerInfoWindow();
+    };
+    nextStepRow.onmouseout = function () {
+        this.style.backgroundColor = "white";
+        this.mapMarker.markerInfoWindowClose();
+    };
 
     // add image to step if at least 1 exists
-    var image = document.createElement('img');
+
     if (poi.photos) {
+        var image = document.createElement('img');
         image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50});
+        image.className = "img-circle stepImage";
         nextStepRow.appendChild(image);
     }
 
+    var badge = document.createElement('span');
+    badge.className = "badge";
+    badge.innerText = poi.rating;
+    nextStepRow.appendChild(badge);
+
     // add text to the step
-    var textDiv = document.createElement('div');
+    //var textDiv = document.createElement('span');
+    //textDiv.className = "stepHeader";
+
     //div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
-    textDiv.innerHTML = poi.name.toString();
-    textDiv.style.float = "right";
-    textDiv.style.wordWrap = "break-word";
-    nextStepRow.appendChild(textDiv);
+
+
+    nextStepRow.appendChild(document.createTextNode(poi.name.toString()));
     routeStep += 1;
-
-
-
 
 
     if (routeSteps.children.length == 0) {
@@ -143,12 +150,10 @@ function clear() {
 
     bounds = new google.maps.LatLngBounds();
     fitMap();
-
-    document.getElementById("routeInformation").innerHTML = '<h3 style="text-align: center">Route Information </h3>';
 }
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
-    document.body.style.cursor='wait';
+    document.body.style.cursor = 'wait';
     var searchButton = document.getElementById("sendButton");
     searchButton.disabled = true;
     var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
@@ -169,7 +174,7 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
         printScores(heuristic.detailedScores(result));
         fitMap();
         console.log("finishing search");
-        document.body.style.cursor='default';
+        document.body.style.cursor = 'default';
         searchButton.disabled = false;
     });
 }
@@ -187,19 +192,22 @@ function populateDropdownAlgorithms(searchAlgorithms) {
     }
 }
 
-function printScores (scoresObject) {
+function printScores(scoresObject) {
     console.log("in print scores");
     console.log(scoresObject);
 
     var routeInformation = document.getElementById("routeInformation");
-    var curDiv;
     for (var scoreFuncName in scoresObject) {
         if (scoresObject.hasOwnProperty(scoreFuncName)) {
 
-                curDiv = document.createElement("div");
-                curDiv.id = "scoreFunc" + scoreFuncName.toString();
-                curDiv.innerHTML = scoreFuncName.toString() + ": " + scoresObject[scoreFuncName].toString();
-                routeInformation.appendChild(curDiv);
+            var curtr = document.createElement("tr");
+            var curtd = document.createElement("td");
+            curtd.innerHTML = scoreFuncName.toString();
+            curtr.appendChild(curtd);
+            var curtd = document.createElement("td");
+            curtd.innerHTML = scoresObject[scoreFuncName].toFixed(3).toString();
+            curtr.appendChild(curtd);
+            routeInformation.appendChild(curtr);
 
         }
     }

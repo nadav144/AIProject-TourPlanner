@@ -452,8 +452,8 @@ function GeneticSearch() {
 
 }
 
-SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
 SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
+SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
 SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
 
