@@ -78,9 +78,10 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(poi, index, marker) {
+function addRouteStep(poi, index, marker, remaningTime, originalTime) {
     var nextStepRow = document.createElement('li');
 
+    updateProgressBar(((originalTime - remaningTime) / originalTime) * 100);
 
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item routstep';
@@ -152,11 +153,17 @@ function clear() {
     fitMap();
 }
 
+function updateProgressBar(value) {
+    $('.progress-bar').css('width', value + '%').attr('aria-valuenow', value);
+}
+
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     document.body.style.cursor = 'wait';
     var searchButton = document.getElementById("sendButton");
     searchButton.disabled = true;
     var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
+    updateProgressBar(0);
+    $("progressBarDiv").show();
     searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT =====");
 //                log(result);
@@ -166,6 +173,11 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
                 addStepAndMarker(result, j);
             }
         }
+
+        updateProgressBar(0);
+        //$("progressBarDiv").hide();
+        //setTimeout(function x() {},2000);
+
 
         calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
         for (var i = 0; i < result.pois.length; i++) {

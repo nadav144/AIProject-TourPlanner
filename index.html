@@ -48,14 +48,23 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">planner</a></li>
+                <li class="active"><a href="#">Planner</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
+
 <div class="container">
+    <div id="progressBarDiv" class="row">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" id="progress-bar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+
+            </div>
+        </div>
+    </div>
     <div id="content" class="row">
         <div id="leftContainer" class="col-sm-3">
             <div class="panel panel-default">
@@ -142,9 +151,12 @@
                             <!--Search algorithms dynamically populated here-->
                         </select>
                     </div>
+                    <div class="row">
+                        <button id="sendButton" class="btn btn-primary col-lg-5 col-lg-offset-3 text-center"
+                                onclick="sendDataToHandler();"><span
+                                class="glyphicon glyphicon-cog"></span><span>  Find Best Route!</span></button>
+                    </div>
 
-                    <button id="sendButton" class="btn btn-primary col-centered" onclick="sendDataToHandler();"><span
-                            class="glyphicon glyphicon-cog"></span><span>  Find Best Route!</span></button>
 
 
                 </div>

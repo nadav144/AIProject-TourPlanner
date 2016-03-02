@@ -31,8 +31,16 @@ body {
     overflow-y: auto;
 }
 
+#progressBarDiv {
+    margin-top: 7px;
+}
+
 #mapAndLog {
     padding: 0px;
+}
+
+#sendButton {
+    width: 160px;
 }
 
 .timeinput {

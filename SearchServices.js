@@ -551,7 +551,7 @@ function getScore(node, heuristic) {
 
 function addStepAndMarker(nextnode, index) {
     var marker = createMarker(nextnode.pois[index + 1], map, index + 1);
-    addRouteStep(nextnode.pois[index + 1], index + 1, marker);
+    addRouteStep(nextnode.pois[index + 1], index + 1, marker, nextnode.timeRemainingHours, nextnode.originalTime);
 }
 
 
