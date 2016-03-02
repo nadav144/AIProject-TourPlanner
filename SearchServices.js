@@ -24,7 +24,7 @@ function LocalSearchGreedy() {
         // random select a place to add
         var index = Math.floor(Math.random() * (node.pois.length - 1));
 
-        var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+        var searchRadius = getSearchRadius(node, index);
         //console.log(searchRadius);
         getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
             var neighbours = [];
@@ -121,7 +121,7 @@ function LocalSearchGreedyWithNeighbourOptimize() {
         // random select a place to add
         var index = Math.floor(Math.random() * (node.pois.length - 1));
 
-        var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+        var searchRadius = getSearchRadius(node, index);
         //console.log(searchRadius);
         getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
             var neighbours = [];
@@ -239,6 +239,27 @@ function LocalSearchGreedyWithNeighbourOptimize() {
 
 }
 
+function getSearchRadius(node, index) {
+    // distance to closest point
+    var tonext = 1000000;
+    var toprev = 1000000;
+    if (index + 1 < node.pois.length) {
+        tonext = getDistance(node.pois[index].location, node.pois[index + 1].location).airDistance;
+    }
+    if (index != 0) {
+        toprev = getDistance(node.pois[index].location, node.pois[index - 1].location).airDistance;
+    }
+    var mindistancetopoints = Math.min(tonext, toprev);
+    var timeDistance = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+
+    if (mindistancetopoints < 1000) {
+        return timeDistance;
+    } else {
+        return Math.min(mindistancetopoints, timeDistance);
+    }
+
+
+}
 
 function GeneticSearch() {
 
@@ -315,7 +336,7 @@ function GeneticSearch() {
 
     function mutation(node, callback) {
         var index = Math.floor(Math.random() * (node.pois.length - 1));
-        var searchRadius = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+        var searchRadius = getSearchRadius(node, index);
         getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
             //console.log(newpois);
             var neighbours = [];
