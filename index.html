@@ -322,9 +322,10 @@
         function updateEndTime (time) {
             document.getElementById("endTime").value = "1970-01-0" + time.toString() + "T17:00";
         }
-
-        updateStartAddress();
-        updateEndAddress();
+        google.maps.event.addListenerOnce(map, 'idle', function(){
+            updateStartAddress();
+            updateEndAddress();
+        });
         populateDropdownAlgorithms(SEARCH_ALGORITHMS);
 
     </script>
