@@ -76,7 +76,7 @@ function LocalSearchGreedy() {
                 // update the node to be the a random from the max nodes
                 var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
                 log("Added location:" + nextnode.pois[index + 1].name);
-                //log("score:");
+                //log("scoreFunc:");
                 //heuristic.calc(node, true);
 
                 addStepAndMarker(nextnode, index);
@@ -203,7 +203,7 @@ function LocalSearchGreedyWithNeighbourOptimize() {
                 // update the node to be the a random from the max nodes
                 var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
                 log("Added location:" + nextnode.pois[index + 1].name);
-                //log("score:");
+                //log("scoreFunc:");
                 //heuristic.calc(node, true);
 
                 addStepAndMarker(nextnode, index);
@@ -460,7 +460,7 @@ function Node(originalTime, time, pois, distances) {
     this.distances = distances;
     this.originalTime = originalTime;
     this.timeRemainingHours = time;
-    this.score = null;
+    this.scoreFunc = null;
 
 
     this.isTerminal = function x() {
@@ -472,10 +472,10 @@ function Node(originalTime, time, pois, distances) {
     };
 
     this.calcScore = function x() {
-        if (this.score == null) {
-            this.score = getScore(this, heuristic);
+        if (this.scoreFunc == null) {
+            this.scoreFunc = getScore(this, heuristic);
         }
-        return this.score;
+        return this.scoreFunc;
     };
 
     this.cloneAndInsertNewPOI = function (index, poi) {

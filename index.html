@@ -38,63 +38,70 @@
         <img src="http://www.userlogos.org/files/logos/1air2philou/google-maps-topview.png" height="100px"/>
     </div>
     <div id="content" class="row">
-        <div id="inputsContainer" class="col-sm-3" style="background-color: lightblue">
-            <div class="row">
-                <div class="col-sm-6" style="text-align: center">
-                    Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel" style="width: 95%">
+        <div id="leftContainer" class="col-sm-3">
+            <div id="inputsContainer" style="background-color: lightblue">
+                <div class="row">
+                    <div class="col-sm-6" style="text-align: center">
+                        Start Address: <input id="startAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel" style="width: 95%">
+                    </div>
+                    <div id="startAddressButtons" class="col-sm-6">
+                        <button class="btn btn-sm btn-default" onclick="updateStartAddress('Washington, D.C., DC, United States');">Washington</button>
+                        <button class="btn btn-sm btn-default" onclick="updateStartAddress('New York, NY, United States');">New York</button>
+                        <button class="btn btn-sm btn-default" onclick="updateStartAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
+                        <button class="btn btn-sm btn-default" onclick="updateStartAddress('Jerusalem, Israel');">Jerusalem</button>
+                    </div>
                 </div>
-                <div id="startAddressButtons" class="col-sm-6">
-                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Washington, D.C., DC, United States');">Washington</button>
-                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('New York, NY, United States');">New York</button>
-                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
-                    <button class="btn btn-sm btn-default" onclick="updateStartAddress('Jerusalem, Israel');">Jerusalem</button>
+
+                <div class="row">
+                    <div class="col-sm-6" style="text-align: center">
+                        End Address: <input id="endAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel" style="width: 95%">
+                    </div>
+                    <div id="endAddressButtons" class="col-sm-6">
+                        <button class="btn btn-sm btn-default" onclick="updateEndAddress('Washington, D.C., DC, United States');">Washington</button>
+                        <button class="btn btn-sm btn-default" onclick="updateEndAddress('New York, NY, United States');">New York</button>
+                        <button class="btn btn-sm btn-default" onclick="updateEndAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
+                        <button class="btn btn-sm btn-default" onclick="updateEndAddress('Jerusalem, Israel');">Jerusalem</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="startTimeButtons" class="col-sm-6" style="text-align: center">
+                        Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00" style="width: 95%">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6" style="text-align: center">
+                        End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00" style="width: 95%">
+                    </div>
+                    <div id="endTimeButtons" class="col-sm-6">
+                        <button class="btn btn-sm btn-default" onclick="updateEndTime(1);">1 day</button>
+                        <button class="btn btn-sm btn-default" onclick="updateEndTime(2);">2 days</button>
+                        <button class="btn btn-sm btn-default" onclick="updateEndTime(7);">1 week</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2 style="text-align: center">
+                            Algorithm
+                        </h2>
+                    </div>
+                    <div class="col-sm-6" style="text-align: center; padding-top: 20px;">
+                        <select id="searchAlgo" style="height: 30px; width: 100%">
+                            <!--Search algorithms dynamically populated here-->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="sendButtonDiv" class="row" style="text-align: center; margin: 10px">
+                    <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();" >Find Best Route!</button>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-sm-6" style="text-align: center">
-                    End Address: <input id="endAddressInput" placeholder="" onFocus="geolocate()" onblur="updateLocation(this)" type="text" value="Jerusalem, Israel" style="width: 95%">
-                </div>
-                <div id="endAddressButtons" class="col-sm-6">
-                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Washington, D.C., DC, United States');">Washington</button>
-                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('New York, NY, United States');">New York</button>
-                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Tel Aviv-Yafo, Israel');">Tel Aviv</button>
-                    <button class="btn btn-sm btn-default" onclick="updateEndAddress('Jerusalem, Israel');">Jerusalem</button>
-                </div>
-            </div>
-
-            <div class="row">
-                <div id="startTimeButtons" class="col-sm-6" style="text-align: center">
-                    Start Time: <input id="startTime" type="datetime-local" value="1970-01-01T08:00" style="width: 95%">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-6" style="text-align: center">
-                    End Time: <input id="endTime" type="datetime-local" value="1970-01-01T17:00" style="width: 95%">
-                </div>
-                <div id="endTimeButtons" class="col-sm-6">
-                    <button class="btn btn-sm btn-default" onclick="updateEndTime(1);">1 day</button>
-                    <button class="btn btn-sm btn-default" onclick="updateEndTime(2);">2 days</button>
-                    <button class="btn btn-sm btn-default" onclick="updateEndTime(7);">1 week</button>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-sm-6">
-                    <h2 style="text-align: center">
-                        Algorithm
-                    </h2>
-                </div>
-                <div class="col-sm-6" style="text-align: center; padding-top: 20px;">
-                    <select id="searchAlgo" style="height: 30px">
-                        <!--Search algorithms dynamically populated here-->
-                    </select>
-                </div>
-            </div>
-
-            <div id="sendButtonDiv" class="row" style="text-align: center; margin: 10px">
-                <button id="sendButton" class="btn btn-lg btn-primary" onclick="sendDataToHandler();" >Find Best Route!</button>
+            <div id="routeInformation" style="background-color: lightgreen; padding-left: 10px;">
+                <h3 style="text-align: center">
+                    Route Information
+                </h3>
             </div>
         </div>
         <div id ="mapAndLog" class="col-sm-7" style="padding: 0;">

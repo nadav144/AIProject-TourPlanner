@@ -105,6 +105,7 @@ function addRouteStep(poi, index, marker) {
     //div.innerHTML = routeStep.toString() + ". " + poi.name.toString();
     textDiv.innerHTML = poi.name.toString();
     textDiv.style.float = "right";
+    textDiv.style.wordWrap = "break-word";
     nextStepRow.appendChild(textDiv);
     routeStep += 1;
 
@@ -142,6 +143,8 @@ function clear() {
 
     bounds = new google.maps.LatLngBounds();
     fitMap();
+
+    document.getElementById("routeInformation").innerHTML = '<h3 style="text-align: center">Route Information </h3>';
 }
 
 function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
@@ -163,6 +166,7 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
         for (var i = 0; i < result.pois.length; i++) {
 //                    markers.push(createMarker(result.pois[i], map));
         }
+        printScores(heuristic.detailedScores(result));
         fitMap();
         console.log("finishing search");
         document.body.style.cursor='default';
@@ -178,6 +182,24 @@ function populateDropdownAlgorithms(searchAlgorithms) {
             option = document.createElement("option");
             option.innerHTML = searchAlgoKey;
             selectElem.appendChild(option);
+
+        }
+    }
+}
+
+function printScores (scoresObject) {
+    console.log("in print scores");
+    console.log(scoresObject);
+
+    var routeInformation = document.getElementById("routeInformation");
+    var curDiv;
+    for (var scoreFuncName in scoresObject) {
+        if (scoresObject.hasOwnProperty(scoreFuncName)) {
+
+                curDiv = document.createElement("div");
+                curDiv.id = "scoreFunc" + scoreFuncName.toString();
+                curDiv.innerHTML = scoreFuncName.toString() + ": " + scoresObject[scoreFuncName].toString();
+                routeInformation.appendChild(curDiv);
 
         }
     }
