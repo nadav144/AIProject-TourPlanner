@@ -101,7 +101,7 @@ function addRouteStep(poi, index, marker, remaningTime, originalTime) {
     if (poi.photos) {
         var image = document.createElement('img');
         image.src = poi.photos[0].getUrl({'maxWidth': 50, 'maxHeight': 50});
-        image.className = "img-circle stepImage";
+        image.className = "img-rounded stepImage";
         nextStepRow.appendChild(image);
     }
 

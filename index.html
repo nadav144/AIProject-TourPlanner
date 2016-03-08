@@ -130,37 +130,35 @@
                             </div><!-- /btn-group -->
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="form-group col-sm-4">
+                            <label>Days:</label>
+                            <input type="number" id="daysInput" class="timeinput" value="1" width="20px;"/>
+                        </div>
 
-                    <div class="form-group col-sm-4">
-                        <label>Days:</label>
-                        <input type="number" id="daysInput" class="timeinput" value="1" width="20px;"/>
-                    </div>
+                        <div class="form-group col-sm-4">
+                            <label>Hours:</label>
+                            <input id="hoursInput" class="timeinput" type="number" value="0"/>
+                        </div>
 
-                    <div class="form-group col-sm-4">
-                        <label>Hours:</label>
-                        <input id="hoursInput" class="timeinput" type="number" value="1"/>
-                    </div>
+                        <div class="form-group col-sm-4">
 
-                    <div class="form-group col-sm-4">
-
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Algorithem:</label>
+                        <label>Algorithm:</label>
                         <select id="searchAlgo">
                             <!--Search algorithms dynamically populated here-->
                         </select>
                     </div>
+
                     <div class="row">
-                        <button id="sendButton" class="btn btn-primary col-lg-5 col-lg-offset-3 text-center"
-                                onclick="sendDataToHandler();"><span
-                                class="glyphicon glyphicon-cog"></span><span>  Find Best Route!</span></button>
+                        <button id="sendButton" class="btn btn-primary col-lg-5 col-lg-offset-3 text-center" onclick="sendDataToHandler();" disabled>
+                            <span class="glyphicon glyphicon-cog"></span><span>  Find Best Route!</span>
+                        </button>
                     </div>
-
-
-
                 </div>
-
             </div>
 
             <div class="panel panel-default">
@@ -206,7 +204,7 @@
         <div class="col-sm-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Recomnded POIs</h3>
+                    <h3 class="panel-title">Recommended POIs</h3>
                 </div>
                 <div class="panel-body" id="route">
                     <ul id="routeSteps" class="list-group">
@@ -444,7 +442,10 @@
     google.maps.event.addListenerOnce(map, 'idle', function () {
         updateStartAddress();
         updateEndAddress();
+        setTimeout(function () {document.getElementById("sendButton").disabled = false;}, 0);
     });
+
+
     populateDropdownAlgorithms(SEARCH_ALGORITHMS);
 
 </script>
