@@ -135,8 +135,14 @@ function clear() {
         m.setMap(null);
     });
 
+
     // delete route from map.
     directionsDisplay.setDirections({geocoded_waypoints: [], routes: [], status: 'OK', request: Object});
+
+    var routeInformation = document.getElementById("routeInformation");
+    while (routeInformation.firstChild) {
+        routeInformation.removeChild(routeInformation.firstChild);
+    }
 
     // clear all route steps
     routeSteps.innerHTML = "";
