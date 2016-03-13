@@ -306,7 +306,7 @@
 
     initAutocomplete();
 
-    var startmarker;
+    var startMarker;
     var endMarker;
 
 
@@ -346,10 +346,10 @@
                         lat: results[0].geometry.location.lat(),
                         lng: results[0].geometry.location.lng()
                     };
-                    if (startmarker == null) {
-                        startmarker = createMarker({location: startAddressLoc, name: "start"}, map, 0);
+                    if (startMarker == null) {
+                        startMarker = createMarker({location: startAddressLoc, name: "start"}, map, 0);
                     } else {
-                        startmarker.setPosition(startAddressLoc);
+                        startMarker.setPosition(startAddressLoc);
                         fitMap(true);
                     }
                 } else {
@@ -376,11 +376,11 @@
 
         var hours = Number(document.getElementById("hoursInput").value);
         var days = Number(document.getElementById("daysInput").value);
-        console.log(days);
-        console.log(hours);
+//        console.log(days);
+//        console.log(hours);
         var tourLength = (days * 9) + hours;
-        console.log(tourLength);
-        console.log("dsfd");
+//        console.log(tourLength);
+//        console.log("dsfd");
 //
 //        startDate.setTime(startDate.getTime() + startDate.getTimezoneOffset() * 60 * 1000);
 //        endDate.setTime(endDate.getTime() + endDate.getTimezoneOffset() * 60 * 1000);

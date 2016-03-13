@@ -6,6 +6,7 @@
 var service = null;
 var lastRequestTime = new Date();
 var queryWaitTime = 201;
+var numOfAPIReqs = 0;
 
 var mapCache = {};
 
@@ -15,6 +16,7 @@ function InitMapService(mapService) {
 
 
 function getWaitTime() {
+    return 300;
     var now = new Date();
     var diff = now - lastRequestTime;
     if (diff > queryWaitTime) {
@@ -30,7 +32,8 @@ function getFromCache(location, radius) {
 }
 
 function getPOIsAroundLocation(location, radius, preferences, callback) {
-    log("Querying the map for POIs");
+    numOfAPIReqs += 1;
+    log("Querying the map for POIs. Request number " + numOfAPIReqs.toString());
 
 
     var flag = false;

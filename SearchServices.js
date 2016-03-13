@@ -80,7 +80,7 @@ function LocalSearchGreedy() {
                 //log("scoreFunc:");
                 //heuristic.calc(node, true);
 
-                addStepAndMarker(nextnode, index);
+                addStepAndMarker(nextnode, index + 1);
                 next(nextnode, callbackOnFinish);
             }
 
@@ -102,7 +102,6 @@ function LocalSearchGreedy() {
             error(errortext);
             callback(null, error);
         }
-
     };
 
     return this;
@@ -266,6 +265,7 @@ function GeneticSearch() {
 
     var population = [];
     var generationAge = 0;
+    var maxGeneration;
 
     function prob(num) {
         var rand = Math.floor(Math.random() * 100);
@@ -376,16 +376,13 @@ function GeneticSearch() {
         console.log(generationAge);
         console.log(population);
 
-        var maxGen = 4;
-        updateProgressBar(generationAge * 100 / maxGen + 1);
+        updateProgressBar(generationAge * 100 / maxGeneration + 1);
 
         log("Generation " + generationAge.toString() + ". Population size: " + population.length.toString());
 
-        if (generationAge > maxGen) {
+        if (generationAge > maxGeneration) {
             updateProgressBar(100);
             callback(GetMaxNode(population));
-
-            return
         } else {
             ReproduceCurrentPop([], 0, callback);
         }
@@ -408,9 +405,9 @@ function GeneticSearch() {
         if (child == null) {
             console.log("HERE   1!!!!");
         }
-        var mutationProb = 1 / generationAge;
+        var mutationProb = Math.pow(1 - (generationAge / maxGeneration), 2);
         if (prob(mutationProb)) {
-            console.log("Mutaion");
+            console.log("Mutation");
             mutation(child, function x(newChild) {
                 var updated = [].concat(new_population);
                 updated.push(newChild);
@@ -436,6 +433,7 @@ function GeneticSearch() {
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
         var distance = getDistance(spoi.location, fpoi.location);
+        maxGeneration = time;
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);
@@ -458,9 +456,9 @@ function GeneticSearch() {
 
 }
 
-SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
-SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
+SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
+//SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
 
 function GetMaxNode(nodes) {
@@ -556,8 +554,8 @@ function getScore(node, heuristic) {
 }
 
 function addStepAndMarker(nextnode, index) {
-    var marker = createMarker(nextnode.pois[index + 1], map, index + 1);
-    addRouteStep(nextnode.pois[index + 1], index + 1, marker, nextnode.timeRemainingHours, nextnode.originalTime);
+    var marker = createMarker(nextnode.pois[index], map, index);
+    addRouteStep(nextnode.pois[index], index, marker, nextnode.timeRemainingHours, nextnode.originalTime);
 }
 
 

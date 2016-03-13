@@ -79,10 +79,10 @@ function createMarker(place, map, index) {
 }
 
 var routeStep = 1;
-function addRouteStep(poi, index, marker, remaningTime, originalTime) {
+function addRouteStep(poi, index, marker, remainingTime, originalTime) {
     var nextStepRow = document.createElement('li');
 
-    updateProgressBar(((originalTime - remaningTime) / originalTime) * 100);
+    updateProgressBar(((originalTime - remainingTime) / originalTime) * 100);
 
     nextStepRow.id = 'routeStep_' + routeStep.toString();
     nextStepRow.className = 'list-group-item routstep';
@@ -125,13 +125,16 @@ function addRouteStep(poi, index, marker, remaningTime, originalTime) {
     if (routeSteps.children.length == 0) {
         routeSteps.appendChild(nextStepRow);
     } else {
-        routeSteps.insertBefore(nextStepRow, routeSteps.children[index - 1]);
+        routeSteps.insertBefore(nextStepRow, routeSteps.children[index]);
     }
 
 
 }
 
 function clear() {
+
+    numOfAPIReqs = 0;
+
     markers.forEach(function (m) {
         m.setMap(null);
     });
@@ -150,7 +153,7 @@ function clear() {
     routeStep = 1;
 
     markers = [];
-    markers.push(startmarker);
+    markers.push(startMarker);
     markers.push(endMarker);
     markers.forEach(function (m) {
         m.setMap(map);
@@ -172,11 +175,17 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     updateProgressBar(0);
     $("progressBarDiv").show();
     searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
-        log("==== RESULT =====");
+        log("==== RESULT ====");
 //                log(result);
+        console.log("==== RESULT ====");
+        console.log(result);
+        addRouteStep(result.pois[0], 0, startMarker, result.timeRemainingHours, result.originalTime);
+        addRouteStep(result.pois[result.pois.length - 1], result.pois.length - 1, endMarker, result.timeRemainingHours, result.originalTime);
+
         // TODO: make this nicer
         if (searchName === "Genetic Search") {
-            for (var j = 0; j < result.pois.length - 1; j++) {
+            for (var j = 1; j < result.pois.length - 1; j++) {
+                console.log(j.toString());
                 addStepAndMarker(result, j);
             }
         }
