@@ -12,7 +12,7 @@ function ScoreHeuristic() {
     scores.push({weight: 0.5, scoreFunc: new photosScore()});
     scores.push({weight: -0.7, scoreFunc: new longestDistanceScore()});
     scores.push({weight: -0.4, scoreFunc: new closeToEnd()});
-    scores.push({weight: 0.5, scoreFunc: new simpsonsDiversityScore()});
+    scores.push({weight: 0.1, scoreFunc: new simpsonsDiversityScore()});
     scores.push({weight: -0.1, scoreFunc: new clusterFactor()});
 
 
@@ -27,9 +27,13 @@ function ScoreHeuristic() {
 
     this.detailedScores = function (node) {
         var detailedScores = {};
+        var total = 0;
         scores.forEach(function(score) {
             detailedScores[score.scoreFunc.toString()] = score.weight * score.scoreFunc.calc(node);
+            total += detailedScores[score.scoreFunc.toString()];
         });
+
+        detailedScores["Total Score"] = total;
 
         return detailedScores;
     }

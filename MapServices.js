@@ -6,6 +6,9 @@
 var service = null;
 var lastRequestTime = new Date();
 var queryWaitTime = 201;
+
+var mapCache = {};
+
 function InitMapService(mapService) {
     service = mapService;
 }
@@ -21,7 +24,14 @@ function getWaitTime() {
     }
 }
 
+
+function getFromCache(location, radius) {
+
+}
+
 function getPOIsAroundLocation(location, radius, preferences, callback) {
+    log("Querying the map for POIs");
+
 
     var flag = false;
 
@@ -45,6 +55,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
                     }, getWaitTime());
                 } else {
                     if (querycount == totalCount) {
+                        log("Got " + pois.length.toString() + " new POIs");
                         callback(pois);
                     }
                 }

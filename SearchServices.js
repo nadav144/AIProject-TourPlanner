@@ -75,6 +75,7 @@ function LocalSearchGreedy() {
 
                 // update the node to be the a random from the max nodes
                 var nextnode = maxNode[Math.floor(Math.random() * maxNode.length)];
+                printScores(heuristic.detailedScores(nextnode));
                 log("Added location:" + nextnode.pois[index + 1].name);
                 //log("scoreFunc:");
                 //heuristic.calc(node, true);
@@ -375,10 +376,15 @@ function GeneticSearch() {
         console.log(generationAge);
         console.log(population);
 
+        var maxGen = 4;
+        updateProgressBar(generationAge * 100 / maxGen + 1);
 
-        if (generationAge > 4) {
-            // TODO: return Best From pop
+        log("Generation " + generationAge.toString() + ". Population size: " + population.length.toString());
+
+        if (generationAge > maxGen) {
+            updateProgressBar(100);
             callback(GetMaxNode(population));
+
             return
         } else {
             ReproduceCurrentPop([], 0, callback);

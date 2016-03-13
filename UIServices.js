@@ -4,6 +4,7 @@
 
 var logTextArea;
 var routeSteps;
+var alldirections = []
 bounds = new google.maps.LatLngBounds();
 function initializeUIServices(document) {
     logTextArea = document.getElementById("logText");
@@ -181,8 +182,7 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
         }
 
         updateProgressBar(0);
-        //$("progressBarDiv").hide();
-        //setTimeout(function x() {},2000);
+
 
 
         calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
@@ -215,6 +215,10 @@ function printScores(scoresObject) {
     console.log(scoresObject);
 
     var routeInformation = document.getElementById("routeInformation");
+    while (routeInformation.firstChild) {
+        routeInformation.removeChild(routeInformation.firstChild);
+    }
+
     for (var scoreFuncName in scoresObject) {
         if (scoresObject.hasOwnProperty(scoreFuncName)) {
 
