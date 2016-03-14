@@ -108,7 +108,10 @@ function LocalSearchGreedy() {
 
 }
 
-
+/**
+ * Redundant
+ * @returns {LocalSearchGreedyWithNeighbourOptimize}
+ */
 function LocalSearchGreedyWithNeighbourOptimize() {
 
     this.self = this;
@@ -304,7 +307,10 @@ function GeneticSearch() {
     function reproduce(x, y) {
         console.log("repreducing");
         var maxPOIS = Math.max(y.pois.length, x.pois.length);
+
+        // add start poi
         var newpois = [x.pois[0]];
+
         // TODO: make sure we don't add the same place twice
         var addedPlacesIds = [];
         var remainingTime = x.originalTime;
@@ -322,7 +328,7 @@ function GeneticSearch() {
             allplaces.splice(index, 1);
         }
 
-        // add finish
+        // add finish poi
         newpois.push(x.pois[x.pois.length - 1]);
 
         var distances = [];
@@ -396,7 +402,7 @@ function GeneticSearch() {
             generationAge++;
             population = new_population;
             nextGeneration(callback);
-            return
+            return;
         }
 
         var x = selectFromPopulationWithProb(population);
@@ -480,7 +486,6 @@ function GetMaxNode(nodes) {
 }
 
 function Node(originalTime, time, pois, distances) {
-    this.self = this;
     this.pois = pois;
     this.distances = distances;
     this.originalTime = originalTime;
@@ -504,7 +509,6 @@ function Node(originalTime, time, pois, distances) {
     };
 
     this.cloneAndInsertNewPOI = function (index, poi) {
-        // TODO::is this deep-copy implemented right?
         var newpois = [].concat(this.pois);
         newpois.splice(index + 1, 0, poi);
         var newDistances = [].concat(this.distances);
