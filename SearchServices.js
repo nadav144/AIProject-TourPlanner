@@ -392,7 +392,8 @@ function GeneticSearch() {
 
     function ReproduceCurrentPop(new_population, curGenerationIndex, callback) {
 
-        if (curGenerationIndex >= population.length * 1.5) {
+        var minval = Math.min.apply(Math, [population.length * 1.5, 100]);
+        if (curGenerationIndex >= minval ) {
             generationAge++;
             population = new_population;
             nextGeneration(callback);

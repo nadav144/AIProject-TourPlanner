@@ -8,7 +8,7 @@ var lastRequestTime = new Date();
 var queryWaitTime = 201;
 var numOfAPIReqs = 0;
 
-var mapCache = {};
+var mapCache = [];
 
 function InitMapService(mapService) {
     service = mapService;
@@ -28,12 +28,34 @@ function getWaitTime() {
 
 
 function getFromCache(location, radius) {
+    var diff = 10000;
 
+
+    for (var i=0;i<mapCache.length;i++){
+        var item = mapCache[i];
+        if (getDistance(item.location, location).airDistance < diff &&  Math.abs(item.radius - radius) < diff) {
+            return item.pois;
+        }
+    }
+
+
+    return null;
 }
 
 function getPOIsAroundLocation(location, radius, preferences, callback) {
+
+    var cachedItem = getFromCache(location, radius);
+    if (cachedItem != null){
+        log("Returning from Cache");
+        callback(cachedItem);
+        return;
+    }
+
     numOfAPIReqs += 1;
+
     log("Querying the map for POIs. Request number " + numOfAPIReqs.toString());
+
+
 
 
     var flag = false;
@@ -59,6 +81,7 @@ function getPOIsAroundLocation(location, radius, preferences, callback) {
                 } else {
                     if (querycount == totalCount) {
                         log("Got " + pois.length.toString() + " new POIs");
+                        mapCache.push({"location": location, "radius": radius, "pois": pois});
                         callback(pois);
                     }
                 }
