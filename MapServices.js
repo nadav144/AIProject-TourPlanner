@@ -5,7 +5,7 @@
 
 var service = null;
 var lastRequestTime = new Date();
-var queryWaitTime = 201;
+var queryWaitTime = 250;
 var numOfAPIReqs = 0;
 
 var mapCache = [];
@@ -16,7 +16,6 @@ function InitMapService(mapService) {
 
 
 function getWaitTime() {
-    return 300;
     var now = new Date();
     var diff = now - lastRequestTime;
     if (diff > queryWaitTime) {
@@ -42,13 +41,14 @@ function getFromCache(location, radius) {
     return null;
 }
 
-function getPOIsAroundLocation(location, radius, preferences, callback) {
-
-    var cachedItem = getFromCache(location, radius);
-    if (cachedItem != null){
-        log("Returning from Cache");
-        callback(cachedItem);
-        return;
+function getPOIsAroundLocation(location, radius, preferences, useCache, callback) {
+    if (useCache) {
+        var cachedItem = getFromCache(location, radius);
+        if (cachedItem != null){
+            log("Returning from Cache");
+            callback(cachedItem);
+            return;
+        }
     }
 
     numOfAPIReqs += 1;

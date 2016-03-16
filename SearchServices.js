@@ -7,6 +7,7 @@
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
 var SEARCH_RADIUS = 50000;
+var MAX_POPULATION = 100;
 
 var SEARCH_ALGORITHMS = {};
 
@@ -26,7 +27,7 @@ function LocalSearchGreedy() {
 
         var searchRadius = getSearchRadius(node, index);
         //console.log(searchRadius);
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], false, function (newpois, status) {
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
                 var exists = false;
@@ -126,7 +127,7 @@ function LocalSearchGreedyWithNeighbourOptimize() {
 
         var searchRadius = getSearchRadius(node, index);
         //console.log(searchRadius);
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], false, function (newpois, status) {
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
                 var exists = false;
@@ -344,7 +345,7 @@ function GeneticSearch() {
     function mutation(node, callback) {
         var index = Math.floor(Math.random() * (node.pois.length - 1));
         var searchRadius = getSearchRadius(node, index);
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], true, function (newpois, status) {
             //console.log(newpois);
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
@@ -398,7 +399,7 @@ function GeneticSearch() {
 
     function ReproduceCurrentPop(new_population, curGenerationIndex, callback) {
 
-        var minval = Math.min.apply(Math, [population.length * 1.5, 100]);
+        var minval = Math.min.apply(Math, [population.length * 1.5, MAX_POPULATION]);
         if (curGenerationIndex >= minval ) {
             generationAge++;
             population = new_population;
@@ -463,8 +464,8 @@ function GeneticSearch() {
 
 }
 
-SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
 SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
+SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
 //SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
 
