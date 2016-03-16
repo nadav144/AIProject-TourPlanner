@@ -7,7 +7,8 @@
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
 var SEARCH_RADIUS = 50000;
-var MAX_POPULATION = 100;
+var MAX_POPULATION = 50;
+var HOURS_TO_GENERATION_CONVERSION = 1;
 
 var SEARCH_ALGORITHMS = {};
 
@@ -128,6 +129,10 @@ function LocalSearchGreedyWithNeighbourOptimize() {
         var searchRadius = getSearchRadius(node, index);
         //console.log(searchRadius);
         getPOIsAroundLocation(node.pois[index].location, searchRadius, [], false, function (newpois, status) {
+            if (status) {
+                log(status);
+                return;
+            }
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
                 var exists = false;
@@ -441,7 +446,7 @@ function GeneticSearch() {
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
         var distance = getDistance(spoi.location, fpoi.location);
-        maxGeneration = time;
+        maxGeneration = time * HOURS_TO_GENERATION_CONVERSION;
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);

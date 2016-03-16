@@ -5,10 +5,11 @@
 
 var service = null;
 var lastRequestTime = new Date();
-var queryWaitTime = 250;
+var queryWaitTime = 300;
 var numOfAPIReqs = 0;
 
 var mapCache = [];
+var waitingRequests = [];
 
 function InitMapService(mapService) {
     service = mapService;
@@ -91,6 +92,11 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                     callback([], status);
                 }
                 break;
+            case "OVER_QUERY_LIMIT":
+                    window.alert("Sorry. query limit to google places is reached");
+                callback([], status);
+
+                break;
             default:
                 error("error on query");
                 error(status);
@@ -98,7 +104,8 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
         }
     };
 
-    setTimeout(function () {
+
+    var request = function () {
 
 
         pois = [];
@@ -124,8 +131,18 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
             }, process
         );
 
-    }, getWaitTime());
+    };
+    waitingRequests.push(request);
 }
+
+function executeRequests() {
+    if (waitingRequests.length > 0) {
+        var request = waitingRequests.shift();
+        request();
+    }
+    window.setTimeout(executeRequests, queryWaitTime);
+}
+executeRequests();
 
 /**
  *
