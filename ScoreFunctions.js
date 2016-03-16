@@ -7,13 +7,13 @@
 function ScoreHeuristic() {
 
     var scores = [];
-    scores.push({weight: 1, scoreFunc: new ratingScore()});
-    scores.push({weight: 0.4, scoreFunc: new typesScore()});
-    scores.push({weight: 0.5, scoreFunc: new photosScore()});
-    scores.push({weight: -0.7, scoreFunc: new longestDistanceScore()});
-    scores.push({weight: -0.4, scoreFunc: new closeToEnd()});
-    scores.push({weight: 0.1, scoreFunc: new simpsonsDiversityScore()});
-    scores.push({weight: -0.1, scoreFunc: new clusterFactor()});
+    scores.push({weight: 1, scoreFunc: new RatingScore()});
+    scores.push({weight: 0.4, scoreFunc: new TypesScore()});
+    scores.push({weight: 0.5, scoreFunc: new PhotosScore()});
+    scores.push({weight: -0.7, scoreFunc: new LongestDistanceScore()});
+    scores.push({weight: -0.4, scoreFunc: new CloseToEnd()});
+    scores.push({weight: 0.1, scoreFunc: new SimpsonsDiversityScore()});
+    scores.push({weight: -0.1, scoreFunc: new ClusterFactor()});
 
 
     this.calc = function (node) {
@@ -41,7 +41,7 @@ function ScoreHeuristic() {
 }
 
 
-function ratingScore() {
+function RatingScore() {
     this.name = "rating";
     this.calc = function x(node) {
         var score = 0;
@@ -58,7 +58,7 @@ function ratingScore() {
     };
 }
 
-function photosScore() {
+function PhotosScore() {
     this.name = "photos";
     this.calc = function x(node) {
         var score = 0;
@@ -75,7 +75,7 @@ function photosScore() {
     };
 }
 
-function typesScore() {
+function TypesScore() {
     this.name = "types";
     this.calc = function x(node) {
         var score = 0;
@@ -92,7 +92,7 @@ function typesScore() {
 }
 
 //http://www.countrysideinfo.co.uk/simpsons.htm
-function simpsonsDiversityScore() {
+function SimpsonsDiversityScore() {
     this.name = "diversity";
     this.calc = function x(node) {
         var score = 0;
@@ -122,7 +122,7 @@ function simpsonsDiversityScore() {
     };
 }
 
-function longestDistanceScore() {
+function LongestDistanceScore() {
     this.name = "longestDistance";
     this.calc = function (node) {
         var score = 0;
@@ -137,8 +137,8 @@ function longestDistanceScore() {
     };
 }
 
-function closeToEnd() {
-    this.name = "closeToEnd";
+function CloseToEnd() {
+    this.name = "CloseToEnd";
     this.calc = function (node) {
         return node.distances[node.distances.length - 1].time / (node.originalTime / 2);
     };
@@ -148,8 +148,8 @@ function closeToEnd() {
     };
 }
 
-function clusterFactor() {
-    this.name = "clusterFactor";
+function ClusterFactor() {
+    this.name = "ClusterFactor";
     this.calc = function (node) {
 
         // set critical radius to be the distance between the first and last point divided by 20.

@@ -193,8 +193,7 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
         updateProgressBar(0);
 
 
-
-        calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
+        //calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
         for (var i = 0; i < result.pois.length; i++) {
 //                    markers.push(createMarker(result.pois[i], map));
         }
