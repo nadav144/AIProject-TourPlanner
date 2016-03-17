@@ -5,11 +5,13 @@
 
 var service = null;
 var lastRequestTime = new Date();
-var queryWaitTime = 300;
+var MIN_QUERY_WAIT_TIME = 250;
+var queryWaitTime = MIN_QUERY_WAIT_TIME;
 var numOfAPIReqs = 0;
 
 var mapCache = [];
 var waitingRequests = [];
+var lastRequest;
 
 function InitMapService(mapService) {
     service = mapService;
@@ -56,11 +58,6 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
 
     log("Querying the map for POIs. Request number " + numOfAPIReqs.toString());
 
-
-
-
-    var flag = false;
-
     var process = function (result, status, pagination) {
         querycount++;
         switch (status) {
@@ -86,6 +83,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                         callback(pois);
                     }
                 }
+                reduceWaitTime();
                 break;
             case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
                 if (querycount == totalCount) {
@@ -93,8 +91,9 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 }
                 break;
             case "OVER_QUERY_LIMIT":
-                window.alert("Sorry. query limit to google places is reached");
-                waitingRequests = [];
+                increaseWaitTime();
+                log("Query limit reached. Throttling API requests. Waiting " + queryWaitTime.toString() + " ms between requests.");
+                waitingRequests.unshift(lastRequest);
                 break;
             default:
                 error("error on query");
@@ -136,8 +135,8 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
 
 function executeRequests() {
     if (waitingRequests.length > 0) {
-        var request = waitingRequests.shift();
-        request();
+        lastRequest = waitingRequests.shift();
+        lastRequest();
     }
     window.setTimeout(executeRequests, queryWaitTime);
 }
@@ -155,4 +154,12 @@ function getDistance(start, finish) {
     var time = ((distanceInMeters / 1000) / 60);
     var drivingFactor = 1.3;
     return new Distance(start, finish, time * drivingFactor, distanceInMeters);
+}
+
+function increaseWaitTime() {
+    queryWaitTime = queryWaitTime * 1.5;
+}
+
+function reduceWaitTime() {
+    queryWaitTime = Math.max (queryWaitTime * 0.9, MIN_QUERY_WAIT_TIME);
 }
