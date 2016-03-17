@@ -350,7 +350,7 @@ function GeneticSearch() {
     function mutation(node, callback) {
         var index = Math.floor(Math.random() * (node.pois.length - 1));
         var searchRadius = getSearchRadius(node, index);
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], true, function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], false, function (newpois, status) {
             //console.log(newpois);
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
