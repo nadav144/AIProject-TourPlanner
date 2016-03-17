@@ -93,9 +93,8 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 }
                 break;
             case "OVER_QUERY_LIMIT":
-                    window.alert("Sorry. query limit to google places is reached");
-                callback([], status);
-
+                window.alert("Sorry. query limit to google places is reached");
+                waitingRequests = [];
                 break;
             default:
                 error("error on query");

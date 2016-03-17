@@ -176,6 +176,7 @@ function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     $("progressBarDiv").show();
     searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         log("==== RESULT ====");
+        waitingRequests = []; // kill remaining requests.
 //                log(result);
         console.log("==== RESULT ====");
         console.log(result);
