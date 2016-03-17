@@ -75,25 +75,34 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                     setTimeout(function x() {
                         lastRequestTime = new Date();
                         pagination.nextPage();
-                    }, getWaitTime());
+                    }, queryWaitTime);
                 } else {
                     if (querycount == totalCount) {
                         log("Got " + pois.length.toString() + " new POIs");
                         mapCache.push({"location": location, "radius": radius, "pois": pois});
+                        reduceWaitTime();
+                        window.setTimeout(executeRequests, queryWaitTime);
                         callback(pois);
                     }
                 }
-                reduceWaitTime();
                 break;
             case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
+                reduceWaitTime();
                 if (querycount == totalCount) {
+                    window.setTimeout(executeRequests, queryWaitTime);
                     callback([], status);
                 }
                 break;
             case "OVER_QUERY_LIMIT":
                 increaseWaitTime();
-                log("Query limit reached. Throttling API requests. Waiting " + queryWaitTime.toString() + " ms between requests.");
-                waitingRequests.unshift(lastRequest);
+                if (querycount === 2) {
+                    window.setTimeout(executeRequests, queryWaitTime);
+                    if (pois.length === 0) {
+                        waitingRequests.unshift(lastRequest);
+                    } else {
+                        callback(pois);
+                    }
+                }
                 break;
             default:
                 error("error on query");
@@ -120,7 +129,6 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 //types: ['zoo', 'museum', 'aquarium', 'amusement_park']
             }, process
         );
-
         service.nearbySearch({
                 location: location,
                 radius: radius,
@@ -130,15 +138,18 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
         );
 
     };
+
     waitingRequests.push(request);
 }
 
 function executeRequests() {
+    console.log(waitingRequests.length.toString() + " pending requests");
     if (waitingRequests.length > 0) {
         lastRequest = waitingRequests.shift();
         lastRequest();
+    } else {
+        window.setTimeout(executeRequests, queryWaitTime);
     }
-    window.setTimeout(executeRequests, queryWaitTime);
 }
 executeRequests();
 
@@ -157,9 +168,10 @@ function getDistance(start, finish) {
 }
 
 function increaseWaitTime() {
-    queryWaitTime = queryWaitTime * 1.5;
+    queryWaitTime = Math.floor(queryWaitTime * 1.5);
+    log("Query limit reached. Throttling API requests. Waiting " + (queryWaitTime/1000).toString() + " seconds between requests.");
 }
 
 function reduceWaitTime() {
-    queryWaitTime = Math.max (queryWaitTime * 0.9, MIN_QUERY_WAIT_TIME);
+    queryWaitTime = Math.floor(Math.max(queryWaitTime * 0.9, MIN_QUERY_WAIT_TIME));
 }
