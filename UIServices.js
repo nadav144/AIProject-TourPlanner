@@ -13,20 +13,13 @@ function initializeUIServices(document) {
 
 var logLine = 1;
 function log(content) {
-    //if (typeof content === "object") {
-    //    logTextArea.value += JSON.stringify(content) + "\n";
-    //} else {
-    //    logTextArea.value += content + "\n";
-    //}
     logTextArea.value += logLine.toString() + ". " + content + "\n";
     logLine++;
     logTextArea.scrollTop = logTextArea.scrollHeight;
-
-    //console.log(content);
 }
 
 function error(content) {
-    console.error(content);
+    log("Error: " + content);
 
 }
 
@@ -59,8 +52,6 @@ function createMarker(place, map, index) {
     google.maps.event.addListener(marker, 'click', function () {
         marker.markerInfoWindow();
     });
-
-    //console.log(marker);
 
     markers.splice(index, 0, marker);
 
@@ -154,8 +145,12 @@ function clear() {
     routeStep = 1;
 
     markers = [];
-    markers.push(startMarker);
-    markers.push(endMarker);
+    if (startMarker) {
+        markers.push(startMarker);
+    }
+    if (endMarker) {
+        markers.push(endMarker);
+    }
     markers.forEach(function (m) {
         m.setMap(map);
     });
@@ -168,40 +163,31 @@ function updateProgressBar(value) {
     $('.progress-bar').css('width', value + '%').attr('aria-valuenow', value);
 }
 
-function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
+function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength, useCache) {
     document.body.style.cursor = 'wait';
     var searchButton = document.getElementById("sendButton");
     searchButton.disabled = true;
     var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
     updateProgressBar(0);
     $("progressBarDiv").show();
-    searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
-        log("==== RESULT ====");
-        waitingRequests = []; // kill remaining requests.
-//                log(result);
-        console.log("==== RESULT ====");
-        console.log(result);
-        addRouteStep(result.pois[0], 0, startMarker, result.timeRemainingHours, result.originalTime);
-        addRouteStep(result.pois[result.pois.length - 1], result.pois.length - 1, endMarker, result.timeRemainingHours, result.originalTime);
+    searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, useCache, function (result, error) {
+        if (result) {
+            log("==== RESULT ====");
+            addRouteStep(result.pois[0], 0, startMarker, result.timeRemainingHours, result.originalTime);
+            addRouteStep(result.pois[result.pois.length - 1], result.pois.length - 1, endMarker, result.timeRemainingHours, result.originalTime);
 
-        // TODO: make this nicer
-        if (searchName === "Genetic Search") {
-            for (var j = 1; j < result.pois.length - 1; j++) {
-                console.log(j.toString());
-                addStepAndMarker(result, j);
+            if (searchName === "Genetic Search") {
+                for (var j = 1; j < result.pois.length - 1; j++) {
+                    addStepAndMarker(result, j);
+                }
             }
+
+            updateProgressBar(0);
+
+            printScores(heuristic.detailedScores(result));
+            fitMap();
         }
 
-        updateProgressBar(0);
-
-
-        //calculateAndDisplayRoute(directionsService, directionsDisplay, result.pois);
-        for (var i = 0; i < result.pois.length; i++) {
-//                    markers.push(createMarker(result.pois[i], map));
-        }
-        printScores(heuristic.detailedScores(result));
-        fitMap();
-        console.log("finishing search");
         document.body.style.cursor = 'default';
         searchButton.disabled = false;
     });
@@ -221,8 +207,6 @@ function populateDropdownAlgorithms(searchAlgorithms) {
 }
 
 function printScores(scoresObject) {
-    console.log("in print scores");
-    console.log(scoresObject);
 
     var routeInformation = document.getElementById("routeInformation");
     while (routeInformation.firstChild) {

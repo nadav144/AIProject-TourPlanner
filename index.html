@@ -12,12 +12,9 @@
     <script src="jquery-2.2.0.min.js"></script>
 
     <!-- Latest compiled and minified CSS bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="Bootstrap_3_3_6.css">
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-            crossorigin="anonymous"></script>
+    <script type="text/javascript"src="Bootstrap_3_3_6.js"></script>
 
     <script type="text/javascript" src="ScoreFunctions.js"></script>
     <script type="text/javascript" src="POI.js"></script>
@@ -47,9 +44,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
-                <span class="glyphicon glyphicon-map-marker"></span>
-                SARF</a>
+            <a class="navbar-brand" href="#">SARF</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
@@ -82,7 +77,7 @@
                         <div class="input-group">
                             <input id="startAddressInput" class="form-control" placeholder="Start"
                                    onFocus="geolocate()"
-                                   onblur="updateLocation(this)" type="text" value="Tel Aviv-Yafo, Israel">
+                                   onblur="updateLocation(this)" type="text">
                             <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false"><span
@@ -108,9 +103,9 @@
                     <div class="form-group">
                         <label>End Location:</label>
                         <div class="input-group">
-                            <input id="endAddressInput" class="form-control" placeholder="Start"
+                            <input id="endAddressInput" class="form-control" placeholder="End"
                                    onFocus="geolocate()"
-                                   onblur="updateLocation(this)" type="text" value="Jerusalem, Israel">
+                                   onblur="updateLocation(this)" type="text">
                             <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false"><span
@@ -154,10 +149,17 @@
                             <!--Search algorithms dynamically populated here-->
                         </select>
                     </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input id="useCache" type="checkbox"> Use cache?
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <button id="sendButton" class="btn btn-primary col-lg-5 col-lg-offset-3 text-center" onclick="sendDataToHandler();" disabled>
-                            <span class="glyphicon glyphicon-cog"></span><span>  Find Best Route!</span>
+                            <span>Find Best Route!</span>
                         </button>
                     </div>
                 </div>
@@ -312,16 +314,12 @@
     var endMarker;
 
 
-    // [START region_geolocation]
     // Bias the autocomplete object to the user's geographical location,
     // as supplied by the browser's 'navigator.geolocation' object.
     function geolocate() {
 //            log ("in geolocate");
         if (navigator.geolocation) {
-//                log ("navigator.geolocation object good"); //todo: delete me
-//                console.log(navigator.geolocation); //todo: delete me
             navigator.geolocation.getCurrentPosition(function (position) {
-//                    console.log(position); // todo: delete me
                 var geolocation = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
@@ -330,11 +328,7 @@
                     center: geolocation,
                     radius: position.coords.accuracy
                 });
-//                    startAddress.setBounds(circle.getBounds());
-//                    console.log(startAddress.getPlace()); //todo: delete me
             });
-        } else {
-//                log ("navigator.geolocation object bad"); //todo: delete me
         }
     }
     // [END region_geolocation]
@@ -369,70 +363,21 @@
 
 
     function sendDataToHandler() {
-
         clear();
-
-//        var startDate = new Date(document.getElementById("startTime").value);
-//        var endDate = new Date(document.getElementById("endTime").value);
-
-
         var hours = Number(document.getElementById("hoursInput").value);
         var days = Number(document.getElementById("daysInput").value);
-//        console.log(days);
-//        console.log(hours);
         var tourLength = (days * 9) + hours;
-//        console.log(tourLength);
-//        console.log("dsfd");
-//
-//        startDate.setTime(startDate.getTime() + startDate.getTimezoneOffset() * 60 * 1000);
-//        endDate.setTime(endDate.getTime() + endDate.getTimezoneOffset() * 60 * 1000);
-
-        // ------ Normalize tour time to start every day at 8:00 and end at 17:00
-//        var startDateNorm = new Date(startDate.toDateString());
-//        var endDateNorm = new Date(endDate.toDateString());
-//        var tourLength = ((endDateNorm.getTime() - startDateNorm.getTime())) / (1000 * 3600 * 24) * 9;
-
-//            console.log(tourLength);
-//        if (tourLength < 0) {
-//            log("Your first day of the tour should be before the last day of the tour");
-//            return;
-//        }
-//        if (tourLength === 0) {
-//            tourLength = Math.max(Math.min(endDate.getHours(), 17) - Math.max(startDate.getHours(), 8), 0);
-//            if (tourLength <= 0) {
-//                log("Tour length is either 0 or less than 0.");
-//                return;
-//            }
-//        } else {
-//            tourLength -= Math.min(17 - Math.max(startDate.getHours(), 8), 0);
-//            tourLength += Math.max(Math.min(endDate.getHours(), 17) - 8, 0);
-//        }
-
-//            console.log(tourLength);
-//            var tourLength = (Math.abs(startDate.getTime() - endDate.getTime())) / (1000 * 3600)
+        var dropDown = document.getElementById("searchAlgo");
+        if (typeof startAddressLoc === "undefined" || typeof endAddressLoc === "undefined") {
+            log ("Please choose start and end addresses before starting");
+            return;
+        }
 
         log("Finding best route:");
-        var dropDown = document.getElementById("searchAlgo");
-//        console.log(tourLength);
-        if (typeof startAddressLoc === "undefined" || typeof endAddressLoc === "undefined") {
-            updateStartAddress();
-            updateEndAddress();
-        }
-        doSearch(dropDown.options[dropDown.selectedIndex].text, startAddressLoc, endAddressLoc, tourLength);
-
-//            // Get each component of the address from the place details
-//            // and fill the corresponding field on the form.
-//            for (var i = 0; i < place.address_components.length; i++) {
-//                var addressType = place.address_components[i].types[0];
-//                if (componentForm[addressType]) {
-//                    var val = place.address_components[i][componentForm[addressType]];
-//                    document.getElementById(addressType).value = val;
-//                }
-//            }
+        doSearch(dropDown.options[dropDown.selectedIndex].text, startAddressLoc, endAddressLoc, tourLength, document.getElementById("useCache").checked);
     }
 
     function fitMap() {
-//            var bounds = new google.maps.LatLngBounds();
         for (var i = 0; i < markers.length; i++) {
             bounds.extend(markers[i].getPosition());
         }
@@ -444,7 +389,6 @@
 
 
         var waypoints = [];
-//            waypoints.push({location: {lat:pois[2].location.lat, lng: pois[2].location.lng}, stopover: true});
 
 
         if (pois.length > 2) {
@@ -470,6 +414,9 @@
     }
 
     function updateStartAddress(address) {
+        if (address === "") {
+            return;
+        }
         if (address) {
             document.getElementById("startAddressInput").value = address;
         }
@@ -477,18 +424,16 @@
         document.getElementById("startAddressInput").blur();
     }
     function updateEndAddress(address) {
+        if (address === "") {
+            return;
+        }
         if (address) {
             document.getElementById("endAddressInput").value = address;
         }
         document.getElementById("endAddressInput").focus();
         document.getElementById("endAddressInput").blur();
     }
-//    function updateEndTime(time) {
-//        document.getElementById("endTime").value = "1970-01-0" + time.toString() + "T17:00";
-//    }
     google.maps.event.addListenerOnce(map, 'idle', function () {
-        updateStartAddress();
-        updateEndAddress();
         setTimeout(function () {document.getElementById("sendButton").disabled = false;}, 0);
     });
 

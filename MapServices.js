@@ -40,11 +40,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
     }
 
     numOfAPIReqs += 1;
-
-    log("Querying the map for POIs. Request number " + numOfAPIReqs.toString());
-
-
-    var flag = false;
+    log("Querying the API for POIs");
 
     var process = function (result, status, pagination) {
         querycount++;
@@ -79,19 +75,15 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 }
                 break;
             case google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT:
-                error("QUERY LIMIT");
-                //QueryLimit = true;
                 if (querycount == totalCount) {
                     setTimeout(function () {
                         callback(pois, status);
                     }, 500);
-                    error("WAITING FOR LIMIT - 500");
                 }
                 break;
                 return;
 
             default:
-                error("error on query");
                 error(status);
                 if (querycount == totalCount) {
                     callback([], status);
@@ -105,8 +97,6 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
         pois = [];
         querycount = 0;
         totalCount = 1;
-
-        console.log("Avoid Query Limit:" + QueryLimit.toString());
 
         if (QueryLimit < 500) {
             totalCount = 2;
