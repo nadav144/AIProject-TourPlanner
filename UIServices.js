@@ -134,6 +134,7 @@ function addRouteStep(poi, index, marker, remainingTime, originalTime) {
 function clear() {
 
     numOfAPIReqs = 0;
+    QueryLimit = 0;
 
     markers.forEach(function (m) {
         m.setMap(null);

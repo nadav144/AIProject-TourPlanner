@@ -5,37 +5,22 @@
 
 var service = null;
 var lastRequestTime = new Date();
-var MIN_QUERY_WAIT_TIME = 250;
-var queryWaitTime = MIN_QUERY_WAIT_TIME;
 var numOfAPIReqs = 0;
-
+var QueryLimit = 0;
 var mapCache = [];
-var waitingRequests = [];
-var lastRequest;
 
 function InitMapService(mapService) {
     service = mapService;
 }
 
 
-function getWaitTime() {
-    var now = new Date();
-    var diff = now - lastRequestTime;
-    if (diff > queryWaitTime) {
-        return 0;
-    } else {
-        return queryWaitTime - diff;
-    }
-}
-
-
 function getFromCache(location, radius) {
-    var diff = 10000;
+    var diff = 1000;
 
 
-    for (var i=0;i<mapCache.length;i++){
+    for (var i = 0; i < mapCache.length; i++) {
         var item = mapCache[i];
-        if (getDistance(item.location, location).airDistance < diff &&  Math.abs(item.radius - radius) < diff) {
+        if (getDistance(item.location, location).airDistance < diff && Math.abs(item.radius - radius) < diff && radius <= item.radius) {
             return item.pois;
         }
     }
@@ -58,8 +43,12 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
 
     log("Querying the map for POIs. Request number " + numOfAPIReqs.toString());
 
+
+    var flag = false;
+
     var process = function (result, status, pagination) {
         querycount++;
+        lastRequestTime = new Date();
         switch (status) {
             case google.maps.places.PlacesServiceStatus.OK:
                 for (var i = 0; i < result.length; i++) {
@@ -75,83 +64,78 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                     setTimeout(function x() {
                         lastRequestTime = new Date();
                         pagination.nextPage();
-                    }, queryWaitTime);
+                    }, 300);
                 } else {
                     if (querycount == totalCount) {
                         log("Got " + pois.length.toString() + " new POIs");
                         mapCache.push({"location": location, "radius": radius, "pois": pois});
-                        reduceWaitTime();
-                        window.setTimeout(executeRequests, queryWaitTime);
                         callback(pois);
                     }
                 }
                 break;
             case google.maps.places.PlacesServiceStatus.ZERO_RESULTS:
-                reduceWaitTime();
                 if (querycount == totalCount) {
-                    window.setTimeout(executeRequests, queryWaitTime);
-                    callback([], status);
+                    callback(pois, status);
                 }
                 break;
-            case "OVER_QUERY_LIMIT":
-                increaseWaitTime();
-                if (querycount === 2) {
-                    window.setTimeout(executeRequests, queryWaitTime);
-                    if (pois.length === 0) {
-                        waitingRequests.unshift(lastRequest);
-                    } else {
-                        callback(pois);
-                    }
+            case google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT:
+                error("QUERY LIMIT");
+                //QueryLimit = true;
+                if (querycount == totalCount) {
+                    setTimeout(function () {
+                        callback(pois, status);
+                    }, 500);
+                    error("WAITING FOR LIMIT - 500");
                 }
                 break;
+                return;
+
             default:
                 error("error on query");
                 error(status);
-                callback([], status);
+                if (querycount == totalCount) {
+                    callback([], status);
+                }
         }
     };
 
-
-    var request = function () {
+    setTimeout(function () {
 
 
         pois = [];
         querycount = 0;
-        totalCount = 2;
+        totalCount = 1;
 
-        lastRequestTime = new Date();
-        service.textSearch({
-                location: location,
-                radius: radius,
-                query: "tourist attractions",
-                //query: "Western Wall, Jerusalem",
-                rankby: google.maps.places.RankBy.PROMINENCE,
-                //types: ['zoo', 'museum', 'aquarium', 'amusement_park']
-            }, process
-        );
-        service.nearbySearch({
-                location: location,
-                radius: radius,
-                rankby: google.maps.places.RankBy.PROMINENCE,
-                types: ['zoo', 'museum', 'aquarium', 'amusement_park']
-            }, process
-        );
+        console.log("Avoid Query Limit:" + QueryLimit.toString());
 
-    };
+        if (QueryLimit < 500) {
+            totalCount = 2;
+            QueryLimit += 10;
+            setTimeout(function () {
+                service.textSearch({
+                        location: location,
+                        radius: radius,
+                        query: "tourist attractions",
+                        //query: "Western Wall, Jerusalem",
+                        rankby: google.maps.places.RankBy.PROMINENCE,
+                        //types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+                    }, process
+                );
+            }, 100);
+        }
+        setTimeout(function () {
+            QueryLimit++;
+            service.nearbySearch({
+                    location: location,
+                    radius: radius,
+                    rankby: google.maps.places.RankBy.PROMINENCE,
+                    types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+                }, process
+            );
 
-    waitingRequests.push(request);
+        }, 200);
+    }, 10);
 }
-
-function executeRequests() {
-    console.log(waitingRequests.length.toString() + " pending requests");
-    if (waitingRequests.length > 0) {
-        lastRequest = waitingRequests.shift();
-        lastRequest();
-    } else {
-        window.setTimeout(executeRequests, queryWaitTime);
-    }
-}
-executeRequests();
 
 /**
  *
@@ -165,13 +149,4 @@ function getDistance(start, finish) {
     var time = ((distanceInMeters / 1000) / 60);
     var drivingFactor = 1.3;
     return new Distance(start, finish, time * drivingFactor, distanceInMeters);
-}
-
-function increaseWaitTime() {
-    queryWaitTime = Math.floor(queryWaitTime * 1.5);
-    log("Query limit reached. Throttling API requests. Waiting " + (queryWaitTime/1000).toString() + " seconds between requests.");
-}
-
-function reduceWaitTime() {
-    queryWaitTime = Math.floor(Math.max(queryWaitTime * 0.9, MIN_QUERY_WAIT_TIME));
 }

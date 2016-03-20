@@ -248,7 +248,27 @@ function LocalSearchGreedyWithNeighbourOptimize() {
 
 }
 
+function getSearchRadius(node, index) {
+    // distance to closest point
+    var tonext = 1000000;
+    var toprev = 1000000;
+    if (index + 1 < node.pois.length) {
+        tonext = getDistance(node.pois[index].location, node.pois[index + 1].location).airDistance;
+    }
+    if (index != 0) {
+        toprev = getDistance(node.pois[index].location, node.pois[index - 1].location).airDistance;
+    }
+    var mindistancetopoints = Math.min(tonext, toprev);
+    var timeDistance = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
 
+    if (mindistancetopoints < 1000) {
+        return timeDistance;
+    } else {
+        return Math.min(mindistancetopoints, timeDistance);
+    }
+
+
+}
 
 function GeneticSearch() {
 
@@ -449,34 +469,10 @@ function GeneticSearch() {
 
 }
 
-
-
-SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 SEARCH_ALGORITHMS["Genetic Search"] = GeneticSearch;
+SEARCH_ALGORITHMS["Local Greedy Search"] = LocalSearchGreedy;
 //SEARCH_ALGORITHMS["Optimized Local Greedy Search"] = LocalSearchGreedyWithNeighbourOptimize;
 
-
-function getSearchRadius(node, index) {
-    // distance to closest point
-    var tonext = 1000000;
-    var toprev = 1000000;
-    if (index + 1 < node.pois.length) {
-        tonext = getDistance(node.pois[index].location, node.pois[index + 1].location).airDistance;
-    }
-    if (index != 0) {
-        toprev = getDistance(node.pois[index].location, node.pois[index - 1].location).airDistance;
-    }
-    var mindistancetopoints = Math.min(tonext, toprev);
-    var timeDistance = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
-
-    if (mindistancetopoints < 1000) {
-        return timeDistance;
-    } else {
-        return Math.min(mindistancetopoints, timeDistance);
-    }
-
-
-}
 
 function GetMaxNode(nodes) {
     var maxScore = null;
