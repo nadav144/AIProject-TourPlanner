@@ -6,7 +6,6 @@
 
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
-var SEARCH_RADIUS = 50000;
 var MAX_POPULATION = 50;
 var HOURS_TO_GENERATION_CONVERSION = 1;
 
@@ -16,7 +15,6 @@ var heuristic = new ScoreHeuristic();
 
 
 function HillClimbSearch() {
-    var useCache;
 
     function getNeighbours(node, callback) {
 
@@ -28,7 +26,7 @@ function HillClimbSearch() {
 
         var searchRadius = getSearchRadius(node, index);
 
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], useCache, function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], false, function (newpois, status) {
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
                 var exists = false;
@@ -89,12 +87,11 @@ function HillClimbSearch() {
         });
     }
 
-    this.searchRoute = function (start, finish, time, usecache, callback) {
+    this.searchRoute = function (start, finish, time, callback) {
         // Generate Start node containing a single route
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
         var distance = getDistance(spoi.location, fpoi.location);
-        useCache = usecache;
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);
@@ -139,7 +136,6 @@ function GeneticSearch() {
     var population = [];
     var generationAge = 0;
     var maxGeneration;
-    var useCache;
 
     function prob(num) {
         var rand = Math.floor(Math.random() * 100);
@@ -181,7 +177,6 @@ function GeneticSearch() {
         // add start poi
         var newpois = [x.pois[0]];
 
-        var addedPlacesIds = [];
         var remainingTime = x.originalTime;
         var allplaces = [];
 
@@ -213,7 +208,7 @@ function GeneticSearch() {
     function mutation(node, callback) {
         var index = Math.floor(Math.random() * (node.pois.length - 1));
         var searchRadius = getSearchRadius(node, index);
-        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], useCache, function (newpois, status) {
+        getPOIsAroundLocation(node.pois[index].location, searchRadius, [], true, function (newpois, status) {
 
             var neighbours = [];
             for (var i = 0; i < newpois.length; i++) {
@@ -291,13 +286,12 @@ function GeneticSearch() {
 
     }
 
-    this.searchRoute = function (start, finish, time, usecache, callback) {
+    this.searchRoute = function (start, finish, time, callback) {
         // Generate Start node containing a single route
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
         var distance = getDistance(spoi.location, fpoi.location);
         maxGeneration = time * HOURS_TO_GENERATION_CONVERSION;
-        useCache = usecache;
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);
@@ -350,10 +344,6 @@ function Node(originalTime, time, pois, distances) {
 
     this.isTerminal = function x() {
         return this.timeRemainingHours <= 0;
-    };
-
-    this.getTimeSpent = function x() {
-        return 2;
     };
 
     this.calcScore = function x() {

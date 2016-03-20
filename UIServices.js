@@ -4,7 +4,6 @@
 
 var logTextArea;
 var routeSteps;
-var alldirections = []
 bounds = new google.maps.LatLngBounds();
 function initializeUIServices(document) {
     logTextArea = document.getElementById("logText");
@@ -163,14 +162,14 @@ function updateProgressBar(value) {
     $('.progress-bar').css('width', value + '%').attr('aria-valuenow', value);
 }
 
-function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength, useCache) {
+function doSearch(searchName, startAddressLoc, endAddressLoc, tourLength) {
     document.body.style.cursor = 'wait';
     var searchButton = document.getElementById("sendButton");
     searchButton.disabled = true;
     var searchAlgo = new SEARCH_ALGORITHMS[searchName]();
     updateProgressBar(0);
     $("progressBarDiv").show();
-    searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, useCache, function (result, error) {
+    searchAlgo.searchRoute(startAddressLoc, endAddressLoc, tourLength, function (result, error) {
         if (result) {
             log("==== RESULT ====");
             addRouteStep(result.pois[0], 0, startMarker, result.timeRemainingHours, result.originalTime);
@@ -212,15 +211,15 @@ function printScores(scoresObject) {
     while (routeInformation.firstChild) {
         routeInformation.removeChild(routeInformation.firstChild);
     }
-
+    var curtd, curtr;
     for (var scoreFuncName in scoresObject) {
         if (scoresObject.hasOwnProperty(scoreFuncName)) {
 
-            var curtr = document.createElement("tr");
-            var curtd = document.createElement("td");
+            curtr = document.createElement("tr");
+            curtd = document.createElement("td");
             curtd.innerHTML = scoreFuncName.toString();
             curtr.appendChild(curtd);
-            var curtd = document.createElement("td");
+            curtd = document.createElement("td");
             curtd.innerHTML = scoresObject[scoreFuncName].toFixed(3).toString();
             curtr.appendChild(curtd);
             routeInformation.appendChild(curtr);
