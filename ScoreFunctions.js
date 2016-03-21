@@ -7,13 +7,13 @@
 function ScoreHeuristic() {
 
     var scores = [];
-    scores.push({weight: 1, scoreFunc: new RatingScore()});
-    scores.push({weight: 0.4, scoreFunc: new TypesScore()});
-    scores.push({weight: 0.5, scoreFunc: new PhotosScore()});
-    scores.push({weight: -0.7, scoreFunc: new LongestDistanceScore()});
-    scores.push({weight: -0.4, scoreFunc: new CloseToEnd()});
-    scores.push({weight: 0.1, scoreFunc: new SimpsonsDiversityScore()});
-    scores.push({weight: -0.1, scoreFunc: new ClusterFactor()});
+    scores.push({weight: RATING_SCORE_WEIGHT, scoreFunc: new RatingScore()});
+    scores.push({weight: TYPES_SCORE_WEIGHT, scoreFunc: new TypesScore()});
+    scores.push({weight: PHOTOS_SCORE_WEIGHT, scoreFunc: new PhotosScore()});
+    scores.push({weight: LONGESTDISTANCE_SCORE_WEIGHT, scoreFunc: new LongestDistanceScore()});
+    scores.push({weight: CLOSETOEND_SCORE_WEIGHT, scoreFunc: new CloseToEnd()});
+    scores.push({weight: DIVERSITY_SCORE_WEIGHT, scoreFunc: new SimpsonsDiversityScore()});
+    scores.push({weight: CLUSTER_SCORE_WEIGHT, scoreFunc: new ClusterFactor()});
 
 
     this.calc = function (node) {

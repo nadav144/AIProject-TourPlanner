@@ -6,8 +6,6 @@
 
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
-var MAX_POPULATION = 50;
-var HOURS_TO_GENERATION_CONVERSION = 10;
 
 var SEARCH_ALGORITHMS = {};
 
@@ -120,7 +118,7 @@ function getSearchRadius(node, index) {
         toprev = getDistance(node.pois[index].location, node.pois[index - 1].location).airDistance;
     }
     var mindistancetopoints = Math.min(tonext, toprev);
-    var timeDistance = Math.min(node.timeRemainingHours, 4) * 60 * 1000;
+    var timeDistance = Math.min(node.timeRemainingHours, 4) * KM_PER_HOUR * 1000;
 
     if (mindistancetopoints < 1000) {
         return timeDistance;

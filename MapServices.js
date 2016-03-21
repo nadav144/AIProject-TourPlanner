@@ -15,7 +15,7 @@ function InitMapService(mapService) {
 
 
 function getFromCache(location, radius) {
-    var diff = 1000;
+    var diff = CACHE_RAIDUS_DIFF;
 
 
     for (var i = 0; i < mapCache.length; i++) {
@@ -113,10 +113,8 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 service.textSearch({
                         location: location,
                         radius: radius,
-                        query: "tourist attractions",
-                        //query: "Western Wall, Jerusalem",
+                    query: POI_TEXT_SEARCH,
                         rankby: google.maps.places.RankBy.PROMINENCE,
-                        //types: ['zoo', 'museum', 'aquarium', 'amusement_park']
                     }, process
                 );
             }, 100);
@@ -127,7 +125,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                     location: location,
                     radius: radius,
                     rankby: google.maps.places.RankBy.PROMINENCE,
-                    types: ['zoo', 'museum', 'aquarium', 'amusement_park']
+                types: POI_TYPES_SEARCH
                 }, process
             );
 
@@ -144,7 +142,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
 function getDistance(start, finish) {
     var distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(start.lat, start.lng), new google.maps.LatLng(finish.lat, finish.lng));
     // distance --> km. / 60 km per hour
-    var time = ((distanceInMeters / 1000) / 60);
-    var drivingFactor = 1.3;
-    return new Distance(start, finish, time * drivingFactor, distanceInMeters);
+    var time = ((distanceInMeters / 1000) / KM_PER_HOUR);
+
+    return new Distance(start, finish, time * DRIVING_FACTOR, distanceInMeters);
 }
