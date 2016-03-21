@@ -7,7 +7,7 @@
 var TYPE_FINISH = 'FINISH';
 var TYPE_START = 'START';
 var MAX_POPULATION = 50;
-var HOURS_TO_GENERATION_CONVERSION = 1;
+var HOURS_TO_GENERATION_CONVERSION = 10;
 
 var SEARCH_ALGORITHMS = {};
 
@@ -291,7 +291,7 @@ function GeneticSearch() {
         var spoi = new POI(TYPE_START, start);
         var fpoi = new POI(TYPE_FINISH, finish);
         var distance = getDistance(spoi.location, fpoi.location);
-        maxGeneration = time * HOURS_TO_GENERATION_CONVERSION;
+        maxGeneration = Math.min(time * HOURS_TO_GENERATION_CONVERSION, 120);
 
         if (distance.time < time) {
             var node = new Node(time, time, [spoi, fpoi], [distance]);

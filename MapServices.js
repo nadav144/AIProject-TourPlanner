@@ -6,7 +6,7 @@
 var service = null;
 var lastRequestTime = new Date();
 var numOfAPIReqs = 0;
-var QueryLimit = 0;
+var QueryLimit = false;
 var mapCache = [];
 
 function InitMapService(mapService) {
@@ -37,6 +37,13 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
             callback(cachedItem);
             return;
         }
+    }
+
+    if (QueryLimit) {
+        setTimeout(function () {
+            callback([]);
+        }, 200);
+        return;
     }
 
     numOfAPIReqs += 1;
@@ -75,6 +82,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
                 }
                 break;
             case google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT:
+                QueryLimit = true;
                 if (querycount == totalCount) {
                     setTimeout(function () {
                         callback(pois, status);
@@ -98,9 +106,9 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
         querycount = 0;
         totalCount = 1;
 
-        if (QueryLimit < 500) {
+        if (!QueryLimit) {
             totalCount = 2;
-            QueryLimit += 10;
+
             setTimeout(function () {
                 service.textSearch({
                         location: location,
@@ -114,7 +122,7 @@ function getPOIsAroundLocation(location, radius, preferences, useCache, callback
             }, 100);
         }
         setTimeout(function () {
-            QueryLimit++;
+
             service.nearbySearch({
                     location: location,
                     radius: radius,
